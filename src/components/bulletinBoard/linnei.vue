@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-10 16:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-11 11:11:46
+ * @LastEditTime: 2022-10-11 12:53:27
  * @FilePath: \yjxt-web\src\components\bulletinBoard\linnei.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -37,33 +37,43 @@
           >
         </el-row>
       </div>
-      <el-table
-        border
-        :data="tableData"
-        :header-cell-style="{
-          background: '#DCDFE6',
-          color: '#303133',
-          'font-size': '18px',
-        }"
-        :key="tableHeight"
-        :height="tableHeight"
-        style="width: 100%"
-      >
-        <el-table-column
-          align="center"
-          :prop="v.prop"
-          :label="v.label"
-          v-for="(v, i) in tableHeader"
-          :key="i"
-          :width="v.width"
+      <div class="plan">
+        <el-table
+          @contextmenu.prevent.native="openMenu($event)"
+          border
+          :data="tableData"
+          :header-cell-style="{
+            background: '#DCDFE6',
+            color: '#303133',
+            'font-size': '18px',
+          }"
+          :key="tableHeight"
+          :height="tableHeight"
+          style="width: 100%"
         >
-          <template slot-scope="scope">
-            <div @dblclick="upPlan(scope.row, v.label)">
-              {{ scope.row[v.prop] }}
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column
+            align="center"
+            :prop="v.prop"
+            :label="v.label"
+            v-for="(v, i) in tableHeader"
+            :key="i"
+            :width="v.width"
+          >
+            <template slot-scope="scope">
+              <div @dblclick="upPlan(scope.row, v.label)">
+                {{ scope.row[v.prop] }}
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+        <ul
+          v-show="visible"
+          :style="{ left: left + 'px', top: top + 'px' }"
+          class="contextmenu"
+        >
+          <li @click="addPlan">添加生产任务</li>
+        </ul>
+      </div>
     </div>
     <div class="right-table" :key="tableHeight">
       <!-- <div class="text">模具使用信息</div> -->
@@ -137,6 +147,75 @@
         </el-table-column>
       </el-table>
     </div>
+    <el-dialog
+      title="新增生产计划"
+      :visible.sync="dialogFormVisible"
+      width="500px"
+      @close="dialogClose"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        :model="dialogForm"
+        size="mini"
+        ref="userForm"
+        :rules="userFormRules"
+      >
+        <el-form-item label="班次名称" label-width="120px" prop="ShiftName">
+          <el-select
+            style="width: 200px"
+            v-model="dialogForm.ShiftName"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in ShiftNameOptions"
+              :key="item.shiftID"
+              :label="item.ShiftName"
+              :value="item.ShiftName"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="生产型号" label-width="120px" prop="modelID">
+          <el-select
+            style="width: 200px"
+            v-model="dialogForm.modelID"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in modelOptions"
+              :key="item.modelID"
+              :label="item.modelID + ' - ' + item.ModelName"
+              :value="item.modelID"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="计划产量" label-width="120px" prop="planNub">
+          <el-input-number
+            style="width: 200px"
+            v-model="dialogForm.planNub"
+            controls-position="right"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item label="计划生产日期" label-width="120px" prop="pandTime">
+          <el-date-picker
+            style="width: 200px"
+            v-model="dialogForm.pandTime"
+            type="date"
+            value-format="yyyy-MM-dd"
+            placeholder="选择日期"
+          >
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addClick('userForm')"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -155,6 +234,51 @@ export default {
   },
   data() {
     return {
+      top: 0,
+      left: 0,
+      visible: false,
+      ShiftNameOptions: [],
+      modelOptions: [],
+      dialogFormVisible: false,
+      dialogTitle: "新增生产计划",
+      dialogForm: {},
+      userFormRules: {
+        ShiftName: [
+          {
+            required: true,
+            message: "班次名称不能为空",
+            trigger: "blur",
+          },
+        ],
+        modelID: [
+          {
+            required: true,
+            message: "生产型号不能为空",
+            trigger: "blur",
+          },
+        ],
+        planNub: [
+          {
+            required: true,
+            message: "计划产量不能为空",
+            trigger: "blur",
+          },
+        ],
+        actualNub: [
+          {
+            required: true,
+            message: "实际产量不能为空",
+            trigger: "blur",
+          },
+        ],
+        pandTime: [
+          {
+            required: true,
+            message: "计划生产日期不能为空",
+            trigger: "blur",
+          },
+        ],
+      },
       descriptionsItem: [
         { label: "生产班次", value: "ShiftName" },
         { label: "换模次数", value: "ChangeNumber" },
@@ -202,12 +326,20 @@ export default {
     };
   },
   watch: {
-    //***: {
-    //immediate: false,
-    // handler: function(v) {
-    //console.log(v);
-    //}
-    //}
+    //   监听属性对象，newValue为新的值，也就是改变后的值
+    visible(newValue) {
+      if (newValue) {
+        //菜单显示的时候
+        // document.body.addEventListener，document.body.removeEventListener它们都接受3个参数
+        // ("事件名" , "事件处理函数" , "布尔值");
+        // 在body上添加事件处理程序
+        document.body.addEventListener("click", this.closeMenu);
+      } else {
+        //菜单隐藏的时候
+        // 移除body上添加的事件处理程序
+        document.body.removeEventListener("click", this.closeMenu);
+      }
+    },
   },
   created() {},
   beforeDestroy() {
@@ -233,7 +365,6 @@ export default {
       var hour = date.getHours(); //获取小时
       var minutes = date.getMinutes(); //获取分钟
       var second = date.getSeconds(); //获取秒
-      console.log("时间");
       this.dataTime =
         year +
         "-" +
@@ -268,8 +399,81 @@ export default {
       this.queryrizhi();
     }, 10000);
     window.vue = this;
+    this.queryShiftName();
+    this.queryModel();
   },
   methods: {
+    // 右击事件
+    openMenu(e) {
+      this.top = e.pageY;
+      this.left = e.pageX;
+      this.visible = true;
+    },
+    closeMenu() {
+      this.visible = false;
+    },
+    addPlan() {
+      this.dialogFormVisible = true;
+    },
+    // 添加计划
+    async addClick(formName) {
+      console.log("formName: ", formName);
+      console.log(this.$refs[formName]);
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          let res = null;
+          this.loading = this.$loading({
+            lock: true,
+            text: "正在查询",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          // eslint-disable-next-line no-undef
+          res = await frmKuchun.planAdd(
+            this.dialogForm.ShiftName,
+            this.dialogForm.modelID,
+            this.dialogForm.planNub * 1,
+            0,
+            this.dialogForm.pandTime
+          );
+
+          if (res.code === "1" && res.data === "成功") {
+            this.dialogFormVisible = false;
+            this.queryList();
+          } else {
+            this.dialogFormVisible = false;
+            this.$message({
+              message: res.data,
+              type: "warning",
+            });
+            this.loading.close();
+          }
+          console.log("res: ", res);
+        } else {
+          return false;
+        }
+      });
+    },
+    // 查询班次
+    async queryShiftName() {
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.shiftListTwo();
+      console.log("res: ", res);
+      if (res.code === "1") {
+        this.ShiftNameOptions = res.data;
+      }
+    },
+    // 查询型号
+    async queryModel() {
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.modelListTwo("");
+      console.log("res: ", res);
+      if (res.code === "1") {
+        this.modelOptions = res.data;
+      }
+    },
     // 修改换模次数
     updataChangeNumber(data) {
       console.log("data: ", data);
@@ -378,7 +582,6 @@ export default {
       this.mujuList(arr);
       this.queryKanbanList();
     },
-
     async queryKanbanList() {
       let res = null;
       // eslint-disable-next-line no-undef
@@ -520,21 +723,45 @@ export default {
         }
       }
     }
-    .el-table {
-      //   background: rgba(255, 255, 255, 0.37);
-      td,
-      th {
-        padding: 5px 0px;
-      }
-      .el-table__body-wrapper {
-        .el-table__body {
-          .el-table__row {
-            td {
-              font-size: 24px;
-              color: black;
+    .plan {
+      .el-table {
+        //   background: rgba(255, 255, 255, 0.37);
+        td,
+        th {
+          padding: 5px 0px;
+        }
+        .el-table__body-wrapper {
+          .el-table__body {
+            .el-table__row {
+              td {
+                font-size: 24px;
+                color: black;
+              }
             }
           }
         }
+      }
+      .contextmenu {
+        margin: 0;
+        background: #fff;
+        z-index: 3000;
+        position: fixed; //关键样式设置固定定位
+        list-style-type: none;
+        padding: 5px 0;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 400;
+        color: #333;
+        box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
+      }
+
+      .contextmenu li {
+        margin: 0;
+        padding: 7px 16px;
+        cursor: pointer;
+      }
+      .contextmenu li:hover {
+        background: #eee;
       }
     }
   }
