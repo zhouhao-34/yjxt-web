@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-19 09:54:43
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 10:45:01
+ * @LastEditTime: 2022-10-11 13:08:06
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\model.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -311,8 +311,8 @@
             v-if="plcForm.chuli === '累加'"
             :style="plcForm.chuli === '累加' ? 'width: 100px' : 'width: 200px'"
           >
-            <el-option label="直接累加" value="1"> </el-option>
-            <el-option label="每次加1" value="2"> </el-option>
+            <el-option label="直接累加" :value="1"> </el-option>
+            <el-option label="每次加1" :value="2"> </el-option>
           </el-select>
         </el-form-item>
         <!-- 读取成功后回写 -->
