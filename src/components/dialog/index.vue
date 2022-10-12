@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-05 14:31:12
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 16:40:25
+ * @LastEditTime: 2022-10-12 13:46:32
  * @FilePath: \yjxt-web\src\components\dialog\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -475,10 +475,10 @@
           </el-select>
         </el-form-item>
         <!-- 读取成功后回写 -->
-        <el-form-item label="读取成功后回写" prop="returnVal">
+        <!-- <el-form-item label="读取成功后回写" prop="returnVal">
           <el-input v-model="plcForm.returnVal" style="width: 200px"></el-input>
           <div style="color: red">读取成功后回写数据，不需要回写请留空</div>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="setUpPlcClick('plcSetUpForm')"
@@ -865,50 +865,6 @@ export default {
     this.queryUserList();
   },
   methods: {
-    // async aaa() {
-    //   let y = Math.floor(Math.random() * 12);
-    //   let i = sessionStorage.getItem("aaa");
-    //   let res = null;
-    //   let arr = [
-    //     1,
-    //     "D" + i + "00",
-    //     "int16",
-    //     "1",
-    //     "2",
-    //     "",
-    //     "",
-    //     "",
-    //     "",
-    //     "替换",
-    //     "",
-    //     undefined,
-    //   ];
-    //   // eslint-disable-next-line no-undef
-    //   res = await frmKuchun.plc_list_add(arr);
-    //   console.log("res: ", res, arr);
-    //   // eslint-disable-next-line no-unused-vars
-    //   let proList = [
-    //     4,
-    //     "a",
-    //     "b",
-    //     "D" + i + "00-不一致-替换",
-    //     100,
-    //     "工作次数",
-    //     1,
-    //     "工作日",
-    //     80,
-    //     // "img/6030ed8d253df.dd6ef686.jpg",
-    //     this.imgList[y],
-    //     res,
-    //   ];
-    //   // eslint-disable-next-line no-undef
-    //   let res1 = await frmKuchun.listAdd(proList, "1");
-    //   if (res1.data) {
-    //     sessionStorage.setItem("aaa", i * 1 + 1);
-    //     this.$store.commit("setrefresh", { bool: true, name: "form" });
-    //   }
-    //   console.log("res1: ", proList);
-    // },
     // 人员查询
     async queryUserList() {
       let res = null;

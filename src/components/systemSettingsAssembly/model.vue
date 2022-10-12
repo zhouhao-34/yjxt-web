@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-19 09:54:43
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-11 13:08:06
+ * @LastEditTime: 2022-10-12 10:19:12
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\model.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -316,10 +316,10 @@
           </el-select>
         </el-form-item>
         <!-- 读取成功后回写 -->
-        <el-form-item label="读取成功后回写" prop="returnVal">
+        <!-- <el-form-item label="读取成功后回写" prop="returnVal">
           <el-input v-model="plcForm.returnVal" style="width: 200px"></el-input>
           <div style="color: red">读取成功后回写数据，不需要回写请留空</div>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="setUpPlcClick('plcSetUpForm')"

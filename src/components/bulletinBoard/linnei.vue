@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-10 16:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-11 13:34:58
+ * @LastEditTime: 2022-10-12 15:50:28
  * @FilePath: \yjxt-web\src\components\bulletinBoard\linnei.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -185,7 +185,7 @@
             <el-option
               v-for="item in modelOptions"
               :key="item.modelID"
-              :label="item.modelID + ' - ' + item.ModelName"
+              :label="item.PLC_modelID + ' - ' + item.ModelName"
               :value="item.modelID"
             >
             </el-option>
@@ -283,7 +283,7 @@ export default {
         { label: "生产班次", value: "ShiftName" },
         { label: "换模次数", value: "ChangeNumber" },
         { label: "时间", value: "time" },
-        { label: "生产型号", value: "ModelID" },
+        { label: "生产型号", value: "PLC_modelID" },
         { label: "型号名称", value: "ModelName" },
         { label: "实际产量", value: "Actual" },
         { label: "计划产量", value: "PlanNumber" },
@@ -295,7 +295,7 @@ export default {
       ],
       descriptionsData: {},
       tableHeader: [
-        { prop: "ModelID", label: "型号", width: "60px" },
+        { prop: "PLC_modelID", label: "型号", width: "60px" },
         { prop: "ModelName", label: "名称" },
         { prop: "Planproduction", label: "计划生产", width: "100px" },
         { prop: "ActualProduction", label: "实际生产", width: "100px" },
@@ -472,7 +472,7 @@ export default {
       let res = null;
       // eslint-disable-next-line no-undef
       res = await frmKuchun.modelListTwo("");
-      console.log("res: ", res);
+      console.log("查询型号: ", res);
       if (res.code === "1") {
         this.modelOptions = res.data;
       }
@@ -590,13 +590,17 @@ export default {
       // eslint-disable-next-line no-undef
       res = await frmKuchun.kanban();
       console.log("看板: ", res);
-
       this.descriptionsData = res.data[0];
-      this.descriptionsData.completion =
-        (
-          (this.descriptionsData.Actual / this.descriptionsData.Target) *
-          100
-        ).toFixed(0) + "%";
+      if (this.descriptionsData.Target > 0) {
+        this.descriptionsData.completion =
+          (
+            (this.descriptionsData.Actual / this.descriptionsData.Target) *
+            100
+          ).toFixed(0) + "%";
+      } else {
+        this.descriptionsData.completion = "0%";
+      }
+
       this.descriptionsData.OEE = this.descriptionsData.OEE / 100 + "%";
       this.loading.close();
     },
