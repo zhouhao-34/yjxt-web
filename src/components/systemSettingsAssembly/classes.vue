@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-19 11:23:21
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-08-29 09:36:06
+ * @LastEditTime: 2022-10-14 09:21:25
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\classes.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -229,7 +229,7 @@ export default {
       this.dialogFormVisible = true;
     },
     upDatauser(v) {
-      this.dialogForm = v;
+      this.dialogForm = JSON.parse(JSON.stringify(v));
       console.log("v: ", v);
       this.dialogTitle = "修改班次";
       this.dialogFormVisible = true;

@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-19 13:02:46
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 08:46:51
+ * @LastEditTime: 2022-10-17 09:01:52
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\production.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -103,7 +103,11 @@
         :rules="userFormRules"
       >
         <el-form-item label="班次名称" label-width="120px" prop="ShiftName">
-          <el-select v-model="dialogForm.ShiftName" placeholder="请选择">
+          <el-select
+            style="width: 200px"
+            v-model="dialogForm.ShiftName"
+            placeholder="请选择"
+          >
             <el-option
               v-for="item in ShiftNameOptions"
               :key="item.shiftID"
@@ -114,11 +118,15 @@
           </el-select>
         </el-form-item>
         <el-form-item label="生产型号" label-width="120px" prop="modelID">
-          <el-select v-model="dialogForm.modelID" placeholder="请选择">
+          <el-select
+            style="width: 200px"
+            v-model="dialogForm.modelID"
+            placeholder="请选择"
+          >
             <el-option
               v-for="item in modelOptions"
               :key="item.modelID"
-              :label="item.modelID + ' - ' + item.ModelName"
+              :label="item.PLC_modelID + ' - ' + item.ModelName"
               :value="item.modelID"
             >
             </el-option>
@@ -131,16 +139,9 @@
             controls-position="right"
           ></el-input-number>
         </el-form-item>
-        <!-- <el-form-item label="实际产量" label-width="120px" prop="actualNub">
-          <el-input-number
-            style="width: 200px"
-            disabled
-            v-model="dialogForm.actualNub"
-            controls-position="right"
-          ></el-input-number>
-        </el-form-item> -->
         <el-form-item label="计划生产日期" label-width="120px" prop="pandTime">
           <el-date-picker
+            style="width: 200px"
             v-model="dialogForm.pandTime"
             type="date"
             value-format="yyyy-MM-dd"

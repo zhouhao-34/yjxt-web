@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-10 16:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-12 15:50:28
+ * @LastEditTime: 2022-10-17 14:23:38
  * @FilePath: \yjxt-web\src\components\bulletinBoard\linnei.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -393,14 +393,14 @@ export default {
     setTimeout(() => {
       this.queryList();
       this.queryrizhi();
+      this.queryShiftName();
+      this.queryModel();
     }, 1000);
     this.timerTwo = setInterval(() => {
       this.queryList();
       this.queryrizhi();
     }, 10000);
     window.vue = this;
-    this.queryShiftName();
-    this.queryModel();
   },
   methods: {
     // 右击事件
@@ -413,7 +413,16 @@ export default {
       this.visible = false;
     },
     addPlan() {
-      this.dialogFormVisible = true;
+      let user = JSON.parse(localStorage.getItem("user"));
+      console.log("user: ", user);
+      if (user.userType === 1) {
+        this.dialogFormVisible = true;
+      } else {
+        this.$message({
+          message: "请登录后再试",
+          type: "warning",
+        });
+      }
     },
     // 添加计划
     async addClick(formName) {
@@ -462,7 +471,7 @@ export default {
       let res = null;
       // eslint-disable-next-line no-undef
       res = await frmKuchun.shiftListTwo();
-      console.log("res: ", res);
+      console.log("查询班次: ", res);
       if (res.code === "1") {
         this.ShiftNameOptions = res.data;
       }
