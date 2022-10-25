@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-11 14:12:57
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-07 09:44:43
+ * @LastEditTime: 2022-10-25 12:22:33
  * @FilePath: \yjxt-web\src\components\equipmentAssembly\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -41,7 +41,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="100">
+      <el-table-column label="操作" align="center" width="180">
         <!-- eslint-disable-next-line vue/no-unused-vars -->
         <template slot-scope="scope">
           <el-button
@@ -49,6 +49,18 @@
             size="mini"
             @click="handleCommand('1', scope.row)"
             >修改</el-button
+          >
+          <el-button
+            type="text"
+            size="mini"
+            @click="handleCommand('2', scope.row)"
+            >维保</el-button
+          >
+          <el-button
+            type="text"
+            size="mini"
+            @click="handleCommand('3', scope.row)"
+            >更换</el-button
           >
           <el-button
             type="text"
@@ -76,6 +88,7 @@
       ref="dialogIndex"
       :plcOption="plcOption"
       :dialogTitle="dialogTitle"
+      :handleForm="handleForm"
       :form="form"
     ></dialogIndex>
   </div>
@@ -133,11 +146,12 @@ export default {
         yujingValue: "",
         imgPath: "",
         plcSetUp: "",
-        notice: [],
+        notice: 0,
         menuValue: "",
       },
       loading: null,
       timer: null,
+      handleForm: { notice: 0 },
     };
   },
   computed: {
@@ -244,6 +258,21 @@ export default {
     },
     // 点击设备设置菜单
     async handleCommand(key, v) {
+      this.user = JSON.parse(localStorage.getItem("user"));
+      if (this.user.userID === "") {
+        this.$message({
+          type: "warning",
+          message: "请登录！",
+        });
+        return;
+      }
+      if (this.user.userType === 2) {
+        this.$message({
+          type: "warning",
+          message: "权限不足",
+        });
+        return;
+      }
       if (key === "1") {
         this.form = JSON.parse(JSON.stringify(v));
         let res = null;
@@ -254,9 +283,9 @@ export default {
         // eslint-disable-next-line no-undef
         res1 = await frmKuchun.userList(v.proID);
 
-        this.form.notice = [];
+        this.form.notice = 0;
         for (let i = 0; i < res1.data.length; i++) {
-          this.form.notice.push(res1.data[i].userID);
+          this.form.notice = res1.data[i].userID;
         }
         if (this.nodeData.length > 0) {
           this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
@@ -278,6 +307,55 @@ export default {
           this.plcForm.PLC_addressType1 = res2.data[0].where_PLC_addressType;
         }
         this.dialogTitle = "修改";
+        this.$refs.dialogIndex.dialogFormVisible = true;
+      }
+      if (key === "2") {
+        // this.handleDialogFormVisible = true;
+        this.$refs.dialogIndex.handleDialogFormVisible = true;
+        this.handleForm = JSON.parse(JSON.stringify(v));
+        if (this.nodeData.length > 0) {
+          this.handleForm.menuValue =
+            this.nodeData[this.nodeData.length - 1].label;
+          this.handleForm.menuValueID =
+            this.nodeData[this.nodeData.length - 1].menuID;
+        } else {
+          this.handleForm.menuValue = v.menuName;
+          this.handleForm.menuValueID = v.menuID;
+        }
+      }
+      if (key === "3") {
+        this.form = JSON.parse(JSON.stringify(v));
+        console.log("this.form: ", this.form);
+        this.form.notice = 0;
+        if (this.nodeData.length > 0) {
+          this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
+          this.form.menuValueID =
+            this.nodeData[this.nodeData.length - 1].menuID;
+        } else {
+          this.form.menuValue = v.menuName;
+          this.form.menuValueID = v.menuID;
+        }
+        this.form.shopTime = this.form.shopTime + "";
+        this.form.lifeValue = this.form.lifeValue + "";
+        let res = null;
+        // eslint-disable-next-line no-undef
+        res = await frmKuchun.tuijianYJ(this.form.model, this.form.menuValueID);
+        this.form.recommend = res.data;
+        let res1 = null;
+        // eslint-disable-next-line no-undef
+        res1 = await frmKuchun.proEdit_list(this.form.proID);
+        this.form.imgPath = res1.data[0].imgPath;
+        this.form.shopTime = res1.data[0].shopTime;
+        this.form.shopTimeType = res1.data[0].shopTimeType;
+        this.form.plcSetUp = res1.data[0].plcListID;
+        let res2 = null;
+        // eslint-disable-next-line no-undef
+        res2 = await frmKuchun.userList(this.form.proID);
+        for (let i = 0; i < res2.data.length; i++) {
+          this.form.notice = res2.data[i].userID;
+        }
+        console.log(" this.form.notice: ", this.form.notice);
+        this.dialogTitle = "更换设备";
         this.$refs.dialogIndex.dialogFormVisible = true;
       }
       if (key === "4") {

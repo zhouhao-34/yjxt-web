@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-14 12:42:28
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-14 16:18:35
+ * @LastEditTime: 2022-10-24 14:39:25
  * @FilePath: \yjxt-web\src\components\systemSettings.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -22,6 +22,10 @@
         <el-menu-item index="2">
           <i class="el-icon-user"></i>
           <span slot="title">账号管理</span>
+        </el-menu-item>
+        <el-menu-item index="9">
+          <i class="el-icon-notebook-1"></i>
+          <span slot="title">保养手册管理</span>
         </el-menu-item>
         <el-submenu index="8">
           <template slot="title">
@@ -124,6 +128,10 @@ export default {
       if (v === "7") {
         this.breadcrumbList[1].label = "看板固定读取";
         this.$router.push({ path: "/systemSettings/read", query: {} });
+      }
+      if (v === "9") {
+        this.breadcrumbList[1].label = "保养手册管理";
+        this.$router.push({ path: "/systemSettings/manual", query: {} });
       }
     },
   },

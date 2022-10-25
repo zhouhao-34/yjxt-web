@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-05 14:31:12
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-12 13:46:32
+ * @LastEditTime: 2022-10-25 12:18:15
  * @FilePath: \yjxt-web\src\components\dialog\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -177,14 +177,54 @@
         </el-form-item>
 
         <el-form-item :label="'报警通知'" prop="notice">
-          <el-checkbox-group v-model="formadd.notice">
-            <el-checkbox
-              :label="v.userID"
+          <el-select v-model="handleFormtwo.notice" style="width: 400px">
+            <el-option
+              :label="v.userName"
+              :value="v.userID"
               v-for="(v, i) in noticeOption"
               :key="i"
-              >{{ v.userName }}</el-checkbox
             >
-          </el-checkbox-group>
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          label="维保时间"
+          prop="baoyangTime"
+          v-if="dialogTitle !== '添加保养预警项' && dialogTitle !== '修改'"
+        >
+          <el-date-picker
+            style="width: 400px"
+            v-model="formadd.baoyangTime"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item
+          label="选择照片"
+          prop="img"
+          v-if="dialogTitle !== '添加保养预警项' && dialogTitle !== '修改'"
+        >
+          <div
+            class="choicePhoto"
+            v-for="(v, i) in formadd.img"
+            :key="i"
+            style="width: 400px"
+          >
+            <div class="textPhoto">{{ v }}</div>
+            <div>
+              <el-button
+                type="danger"
+                icon="el-icon-close"
+                circle
+                size="mini"
+                @click="deleteChoice(i, 'formadd')"
+              ></el-button>
+            </div>
+          </div>
+          <el-button @click="selectComplete('formadd')">选择文件</el-button>
         </el-form-item>
         <el-form-item
           style="width: 400px"
@@ -269,6 +309,46 @@
             >
             </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="维保时间" prop="baoyangTime">
+          <el-date-picker
+            style="width: 400px"
+            v-model="handleFormtwo.baoyangTime"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="维保类型" prop="weibaotype">
+          <el-select v-model="handleFormtwo.weibaotype" style="width: 400px">
+            <el-option label="保养" :value="1"> </el-option>
+            <!-- <el-option label="更换" :value="2"> </el-option> -->
+            <el-option label="维修" :value="3"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择照片" prop="img">
+          <div
+            class="choicePhoto"
+            v-for="(v, i) in handleFormtwo.img"
+            :key="i"
+            style="width: 400px"
+          >
+            <div class="textPhoto">{{ v }}</div>
+            <div>
+              <el-button
+                type="danger"
+                icon="el-icon-close"
+                circle
+                size="mini"
+                @click="deleteChoice(i, 'handleFormtwo')"
+              ></el-button>
+            </div>
+          </div>
+          <el-button @click="selectComplete('handleFormtwo')"
+            >选择文件</el-button
+          >
         </el-form-item>
         <el-form-item label="备注" prop="remarks">
           <el-input
@@ -517,7 +597,7 @@ export default {
           yujingValue: "",
           imgPath: "",
           plcSetUp: "",
-          notice: [],
+          notice: 0,
           menuValue: "",
         };
       },
@@ -526,7 +606,7 @@ export default {
     handleForm: {
       type: Object,
       default: () => {
-        return { notice: [] };
+        return { notice: 0 };
       },
     },
     // 设置plc表单
@@ -564,7 +644,7 @@ export default {
     return {
       // 人员下拉数据集合
       noticeOption: [],
-      formNotice: [],
+      formnotice: 0,
       // 添加、修改对话框开关
       dialogFormVisible: false,
       formadd: {},
@@ -647,6 +727,20 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
+        baoyangTime: [
+          {
+            required: true,
+            message: "维保时间不能为空",
+            trigger: ["blur", "change"],
+          },
+        ],
+        weibaotype: [
+          {
+            required: true,
+            message: "维保类型不能为空",
+            trigger: ["blur", "change"],
+          },
+        ],
         notice: [
           {
             required: true,
@@ -686,6 +780,20 @@ export default {
           {
             required: true,
             message: "本次维保人不能为空",
+            trigger: ["blur", "change"],
+          },
+        ],
+        baoyangTime: [
+          {
+            required: true,
+            message: "维保时间不能为空",
+            trigger: ["blur", "change"],
+          },
+        ],
+        weibaotype: [
+          {
+            required: true,
+            message: "维保类型不能为空",
             trigger: ["blur", "change"],
           },
         ],
@@ -822,10 +930,17 @@ export default {
             yujingValue: "",
             imgPath: "",
             plcSetUp: "",
-            notice: [],
+            notice: 0,
             menuValue: "",
           };
         }
+        var date = new Date(); // 获取时间
+        var year = date.getFullYear(); // 获取年
+        var month = date.getMonth() + 1; // 获取月
+        var strDate = date.getDate(); // 获取日
+        this.formadd.baoyangTime = year + "-" + month + "-" + strDate;
+        this.formadd.img = [];
+        console.log("this.formadd: ", this.formadd);
       },
     },
     handleDialogFormVisible: {
@@ -835,6 +950,12 @@ export default {
           this.lifeValue = this.handleForm.lifeValue * 1;
           this.yujingValue = this.handleForm.yujingValue * 1;
           this.handleFormtwo = JSON.parse(JSON.stringify(this.handleForm));
+          var date = new Date(); // 获取时间
+          var year = date.getFullYear(); // 获取年
+          var month = date.getMonth() + 1; // 获取月
+          var strDate = date.getDate(); // 获取日
+          this.handleFormtwo.baoyangTime = year + "-" + month + "-" + strDate;
+          this.handleFormtwo.img = [];
         } else {
           this.lifeValue = 0;
           this.yujingValue = 0;
@@ -885,8 +1006,23 @@ export default {
       let res = null;
       // eslint-disable-next-line no-undef
       res = await frmKuchun.uploadImg();
-
       this.formadd.imgPath = res;
+    },
+    // 选择文件
+    async selectComplete(v) {
+      console.log(111);
+      // eslint-disable-next-line no-undef
+      let res = await frmKuchun.uploadImgTwo(1);
+      console.log("res: ", res);
+      if (res !== "") {
+        this[v].img.push(res);
+        this.$forceUpdate();
+      }
+    },
+    //删除已选
+    deleteChoice(i, v) {
+      this[v].img.splice(i, 1);
+      this.$forceUpdate();
     },
     async queryTuijianYJ(v) {
       let res = null;
@@ -900,6 +1036,15 @@ export default {
     addList(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
+          let loading = this.$loading({
+            lock: true,
+            text: "正在查询",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          setTimeout(() => {
+            this.loading.close();
+          }, 30000);
           let res = null;
           if (this.dialogTitle === "添加保养预警项") {
             let proList = [
@@ -916,15 +1061,12 @@ export default {
               this.formadd.plcSetUp,
             ];
             console.log(
-              'proList,this.formadd.notice.join(","): ',
+              "proList,this.formadd.notice: ",
               proList,
-              this.formadd.notice.join(",")
+              this.formadd.notice
             );
             // eslint-disable-next-line no-undef
-            res = await frmKuchun.listAdd(
-              proList,
-              this.formadd.notice.join(",")
-            );
+            res = await frmKuchun.listAdd(proList, this.formadd.notice);
           } else if (this.dialogTitle === "修改") {
             let proList = [
               this.formadd.menuValueID,
@@ -937,12 +1079,9 @@ export default {
               this.formadd.proID,
               this.formadd.plcSetUp,
             ];
-            console.log(proList, this.formadd.notice.join(","));
+            console.log(proList, this.formadd.notice);
             // eslint-disable-next-line no-undef
-            res = await frmKuchun.proEdit(
-              proList,
-              this.formadd.notice.join(",")
-            );
+            res = await frmKuchun.proEdit(proList, this.formadd.notice);
             console.log("res: ", res);
           } else {
             let proList = [
@@ -961,13 +1100,18 @@ export default {
               this.formadd.plcSetUp,
               this.formadd.MID,
             ];
-
+            console.log("this.formadd: ", this.formadd);
             // eslint-disable-next-line no-undef
             res = await frmKuchun.listWeibaoAdd2(
               proList,
-              this.formadd.notice.join(",")
+              this.formadd.notice,
+
+              2,
+              this.formadd.img,
+              this.formadd.baoyangTime
             );
           }
+          loading.close();
           console.log("res: ", res);
           this.dialogFormVisible = false;
         } else {
@@ -1048,15 +1192,24 @@ export default {
     },
     //维保提交
     async weibaoClick(formName) {
+      console.log("formName: ", formName);
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
+          let loading = this.$loading({
+            lock: true,
+            text: "正在查询",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          setTimeout(() => {
+            this.loading.close();
+          }, 30000);
           let res = null;
           let proList = [
             this.handleFormtwo.proID,
             this.handleFormtwo.lifeValue,
             this.handleFormtwo.unit,
             this.handleFormtwo.yujingValue,
-            "已维保设备",
             this.handleFormtwo.remarks,
             this.handleFormtwo.MID,
           ];
@@ -1064,11 +1217,16 @@ export default {
           // eslint-disable-next-line no-undef
           res = await frmKuchun.listWeibaoAdd(
             proList,
-            this.handleFormtwo.notice
+            this.handleFormtwo.notice,
+            this.handleFormtwo.weibaotype,
+            this.handleFormtwo.img,
+            this.handleFormtwo.baoyangTime
           );
+          console.log("res: ", res);
           if (res.data) {
             this.handleDialogFormVisible = false;
           }
+          loading.close();
         } else {
           return false;
         }
@@ -1116,6 +1274,16 @@ export default {
   height: 360px;
   .el-calendar-day {
     height: 35px !important;
+  }
+}
+.choicePhoto {
+  background: #ebeef5;
+  padding: 5px 5px;
+  box-sizing: border-box;
+  display: flex;
+  margin: 5px 0px;
+  .textPhoto {
+    line-height: 14px;
   }
 }
 </style>

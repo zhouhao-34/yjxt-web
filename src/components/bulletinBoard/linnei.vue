@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-10 16:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-17 14:23:38
+ * @LastEditTime: 2022-10-25 10:52:12
  * @FilePath: \yjxt-web\src\components\bulletinBoard\linnei.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -45,7 +45,7 @@
           :header-cell-style="{
             background: '#DCDFE6',
             color: '#303133',
-            'font-size': '18px',
+            'font-size': '16px',
           }"
           :key="tableHeight"
           :height="tableHeight"
@@ -81,7 +81,7 @@
         border
         :data="tableDataTwo"
         :header-cell-style="{
-          'font-size': '18px',
+          'font-size': '16px',
         }"
         height="50%"
         style="width: 100%"
@@ -114,7 +114,7 @@
         border
         :data="tableDataThree"
         :header-cell-style="{
-          'font-size': '18px',
+          'font-size': '16px',
         }"
         height="50%"
         style="width: 100%"
@@ -313,7 +313,8 @@ export default {
         { prop: "mojuName", label: "模具名称" },
         { prop: "mojuNub", label: "使用次数", width: "100px" },
         { prop: "liftNub", label: "设定寿命", width: "100px" },
-        { prop: "baoyangTime", label: "上次保养日期", width: "130px" },
+        { prop: "baoyangTime", label: "上次保养", width: "120px" },
+        { prop: "weixiuTime", label: "上次维修", width: "120px" },
       ],
       tableDataTwo: [],
       tableHeaderThree: [
@@ -628,6 +629,9 @@ export default {
           this.tableDataTwo[i].baoyangTime = this.filterTimeTwo(
             this.tableDataTwo[i].baoyangTime
           );
+          this.tableDataTwo[i].weixiuTime = this.filterTimeTwo(
+            this.tableDataTwo[i].weixiuTime
+          );
         }
       }
     },
@@ -786,7 +790,7 @@ export default {
     .text {
       background: #fff;
       text-align: center;
-      font-size: 20px;
+      font-size: 14px;
     }
     .el-table {
       //   background: rgba(255, 255, 255, 0.37);
@@ -800,7 +804,7 @@ export default {
           .el-table__row {
             td {
               color: #67c23a;
-              font-size: 18px;
+              font-size: 14px;
             }
           }
         }

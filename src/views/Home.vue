@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 11:33:08
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 09:50:38
+ * @LastEditTime: 2022-10-24 19:38:58
  * @FilePath: \yjxt-web\src\views\Home.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -59,7 +59,7 @@
         </div>
       </div>
     </div>
-    <router-view style="height: calc(100% - 60px)" />
+    <router-view :key="historyKey" style="height: calc(100% - 60px)" />
     <el-dialog
       title="登录"
       :visible.sync="dialogFormVisible"
@@ -103,22 +103,43 @@ export default {
   },
   data() {
     return {
-      historyKey: "8",
+      historyKey: 0,
       //选中的菜单
       activeIndex: "8",
       // 菜单列表
       menuList: [
         { menu: "看板", id: "8" },
         { menu: "总览", id: "1" },
-        { menu: "模具管理", id: "10" },
-        { menu: "设备保养管理", id: "2" },
-        { menu: "设备维保记录", id: "3" },
-        { menu: "设备预警信息", id: "4" },
         {
-          menu: "仓库管理",
+          menu: "模具管理",
+          id: "10",
+        },
+        { menu: "设备保养管理", id: "2" },
+        {
+          menu: "设备预警信息",
+          id: "4",
+        },
+        {
+          menu: "设备/模具保养",
+          id: "12",
+          submenu: [
+            { menu: "模具保养记录", id: "11" },
+            { menu: "设备保养记录", id: "14" },
+          ],
+        },
+        {
+          menu: "设备/模具维修",
+          id: "13",
+          submenu: [
+            { menu: "模具维修记录", id: "15" },
+            { menu: "设备维修记录", id: "16" },
+          ],
+        },
+        {
+          menu: "配件库存管理",
           id: "9",
           submenu: [
-            { menu: "仓库列表", id: "9-1" },
+            { menu: "设备配件", id: "9-1" },
             { menu: "入库记录", id: "9-2" },
             { menu: "出库记录", id: "9-3" },
           ],
@@ -202,6 +223,28 @@ export default {
       }
       if (key === "10") {
         this.$router.push({ path: "/moidManagement", query: {} });
+      }
+      if (key === "11") {
+        this.$router.push({ path: "/mouldRecord", query: { type: "保养" } });
+        this.historyKey++;
+      }
+      if (key === "15") {
+        this.$router.push({ path: "/mouldRecord", query: { type: "维修" } });
+        this.historyKey++;
+      }
+      if (key === "14") {
+        this.$router.push({
+          path: "/troubleshooting",
+          query: { type: "保养" },
+        });
+        this.historyKey++;
+      }
+      if (key === "16") {
+        this.$router.push({
+          path: "/troubleshooting",
+          query: { type: "维修" },
+        });
+        this.historyKey++;
       }
     },
     sign() {

@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 13:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-12 16:19:59
+ * @LastEditTime: 2022-10-25 12:22:25
  * @FilePath: \yjxt-web\src\components\equipmentAssembly\atlas.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -108,6 +108,12 @@
                 <el-dropdown-item icon="el-icon-edit" command="1"
                   >修改</el-dropdown-item
                 >
+                <el-dropdown-item icon="el-icon-setting" command="2"
+                  >维保</el-dropdown-item
+                >
+                <el-dropdown-item icon="el-icon-refresh" command="3"
+                  >更换</el-dropdown-item
+                >
                 <el-dropdown-item icon="el-icon-delete" command="4"
                   >删除</el-dropdown-item
                 >
@@ -187,6 +193,7 @@
       :dialogTitle="dialogTitle"
       :form="form"
       :plcForm="plcForm"
+      :handleForm="handleForm"
     ></dialogIndex>
   </div>
 </template>
@@ -236,7 +243,7 @@ export default {
         yujingValue: "",
         imgPath: "",
         plcSetUp: "",
-        notice: [],
+        notice: 0,
         menuValue: "",
       },
       plcForm: {
@@ -255,6 +262,8 @@ export default {
       loading: null,
       timer: null,
       user: JSON.parse(localStorage.getItem("user")),
+
+      handleForm: { notice: 0 },
     };
   },
   computed: {
@@ -285,11 +294,7 @@ export default {
           );
           if (v.name !== "") {
             for (const key in this[v.name]) {
-              if (key === "notice") {
-                this[v.name][key] = [];
-              } else {
-                this[v.name][key] = "";
-              }
+              this[v.name][key] = "";
             }
           }
           this.$store.commit("setrefresh", { bool: false, name: "" });
@@ -422,9 +427,9 @@ export default {
         let res1 = null;
         // eslint-disable-next-line no-undef
         res1 = await frmKuchun.userList(v.proID);
-        this.form.notice = [];
+        this.form.notice = 0;
         for (let i = 0; i < res1.data.length; i++) {
-          this.form.notice.push(res1.data[i].userID);
+          this.form.notice = res1.data[i].userID;
         }
         if (this.nodeData.length > 0) {
           this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
@@ -448,6 +453,55 @@ export default {
         this.dialogTitle = "修改";
         this.$refs.dialogIndex.dialogFormVisible = true;
         // this.dialogFormVisible = true;
+      }
+      if (key === "2") {
+        // this.handleDialogFormVisible = true;
+        this.$refs.dialogIndex.handleDialogFormVisible = true;
+        this.handleForm = JSON.parse(JSON.stringify(v));
+        if (this.nodeData.length > 0) {
+          this.handleForm.menuValue =
+            this.nodeData[this.nodeData.length - 1].label;
+          this.handleForm.menuValueID =
+            this.nodeData[this.nodeData.length - 1].menuID;
+        } else {
+          this.handleForm.menuValue = v.menuName;
+          this.handleForm.menuValueID = v.menuID;
+        }
+      }
+      if (key === "3") {
+        this.form = JSON.parse(JSON.stringify(v));
+        console.log("this.form: ", this.form);
+        this.form.notice = 0;
+        if (this.nodeData.length > 0) {
+          this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
+          this.form.menuValueID =
+            this.nodeData[this.nodeData.length - 1].menuID;
+        } else {
+          this.form.menuValue = v.menuName;
+          this.form.menuValueID = v.menuID;
+        }
+        this.form.shopTime = this.form.shopTime + "";
+        this.form.lifeValue = this.form.lifeValue + "";
+        let res = null;
+        // eslint-disable-next-line no-undef
+        res = await frmKuchun.tuijianYJ(this.form.model, this.form.menuValueID);
+        this.form.recommend = res.data;
+        let res1 = null;
+        // eslint-disable-next-line no-undef
+        res1 = await frmKuchun.proEdit_list(this.form.proID);
+        this.form.imgPath = res1.data[0].imgPath;
+        this.form.shopTime = res1.data[0].shopTime;
+        this.form.shopTimeType = res1.data[0].shopTimeType;
+        this.form.plcSetUp = res1.data[0].plcListID;
+        let res2 = null;
+        // eslint-disable-next-line no-undef
+        res2 = await frmKuchun.userList(this.form.proID);
+        for (let i = 0; i < res2.data.length; i++) {
+          this.form.notice = res2.data[i].userID;
+        }
+        console.log(" this.form.notice: ", this.form.notice);
+        this.dialogTitle = "更换设备";
+        this.$refs.dialogIndex.dialogFormVisible = true;
       }
       if (key === "4") {
         this.$confirm("是否删除当前设备", "提示", {

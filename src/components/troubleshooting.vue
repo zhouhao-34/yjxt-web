@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-14 10:21:06
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-08-08 15:55:05
+ * @LastEditTime: 2022-10-24 19:17:25
  * @FilePath: \yjxt-web\src\components\troubleshooting.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -17,6 +17,13 @@
             :options="equipmentNameOptions"
             :props="cascaderProps"
           ></el-cascader>
+        </el-form-item>
+        <el-form-item label="维保类型">
+          <el-select v-model="formInline.type" clearable placeholder="请选择">
+            <el-option label="全部" :value="0"> </el-option>
+            <el-option label="保养" :value="1"> </el-option>
+            <el-option label="维修" :value="2"> </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="queryList">查询</el-button>
@@ -77,7 +84,7 @@ export default {
   },
   data() {
     return {
-      formInline: { menuID: [] },
+      formInline: { menuID: [], type: 0 },
       equipmentNameOptions: [],
       cascaderProps: {
         children: "children",
@@ -116,6 +123,11 @@ export default {
   },
   created() {},
   mounted() {
+    if (this.$route.query.type === "保养") {
+      this.formInline.type = 1;
+    } else {
+      this.formInline.type = 2;
+    }
     this.tableHeight = this.$refs.troubleshooting.offsetHeight - 140;
     this.queryTreeData();
     this.queryList();
@@ -173,13 +185,14 @@ export default {
 
       // eslint-disable-next-line no-undef
       res = await frmKuchun.proLogListCL(
-        this.pageSize,
         this.currentPage,
+        this.pageSize - 1,
         this.formInline.menuID.length > 0
           ? this.formInline.menuID[this.formInline.menuID.length - 1]
-          : 0
+          : 0,
+        this.formInline.type
       );
-
+      console.log("res: ", res);
       this.total = res.data[0]["0"];
       for (let i = 0; i < res.data[1].length; i++) {
         res.data[1][i].createTimeCL = this.filterTime(
@@ -206,6 +219,7 @@ export default {
         }
       }
       this.tableData = res.data[1];
+      console.log("this.tableData: ", this.tableData);
     },
     // 时间转换
     filterTime(time) {

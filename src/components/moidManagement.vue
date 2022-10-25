@@ -2,12 +2,35 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-31 13:05:57
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-16 10:25:11
+ * @LastEditTime: 2022-10-25 11:02:59
  * @FilePath: \yjxt-web\src\components\moidManagement.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="moidManagement" ref="moidManagement">
+    <div>
+      <el-form :inline="true" :model="queryCriteria" class="demo-form-inline">
+        <el-form-item label="模具名称">
+          <el-input
+            v-model="queryCriteria.name"
+            placeholder="请输入内容"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="上次保养日期">
+          <el-date-picker
+            v-model="queryCriteria.time"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="queryList">查询</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
     <div class="button">
       <el-button @click="addClick" type="primary">添加模具</el-button>
     </div>
@@ -37,7 +60,7 @@
           <!-- eslint-disable-next-line vue/no-unused-vars -->
           <template slot-scope="scope">
             <el-button type="text" size="mini" @click="weihu(scope.row)"
-              >维护</el-button
+              >维保</el-button
             >
             <el-button
               type="text"
@@ -70,6 +93,7 @@
       >
       </el-pagination>
     </div>
+    <!-- 新增修改模具 -->
     <el-dialog
       class="addmodel"
       @close="dialogClose"
@@ -93,6 +117,22 @@
             autocomplete="off"
           ></el-input>
         </el-form-item>
+        <el-form-item label="维护者" label-width="100px" prop="weihuzhe">
+          <el-select
+            style="width: 300px"
+            v-model="form.weihuzhe"
+            multiple
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in formOptions"
+              :key="item.userID"
+              :label="item.userName"
+              :value="item.userID"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="适用型号" label-width="100px" prop="modelList">
           <div
             class="applymodel"
@@ -115,21 +155,6 @@
             </div>
           </div>
           <el-button @click="addModel">添加型号</el-button>
-          <!-- <el-select
-            v-model="form.modelList"
-            filterable
-            multiple
-            placeholder="请选择"
-            style="width: 200px"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.modelID"
-              :label="item.PLC_modelID + ' _ ' + item.modelName"
-              :value="item.modelID"
-            >
-            </el-option>
-          </el-select> -->
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -141,7 +166,7 @@
         >
       </div>
     </el-dialog>
-
+    <!-- 添加模具适用型号 -->
     <el-dialog title="添加型号" :visible.sync="dialogFormVisibleTwo">
       <div>
         <el-form :inline="true" :model="formInline" class="demo-form-inline">
@@ -184,6 +209,101 @@
         <el-button type="primary" @click="modelSelectClick">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 维护模具 -->
+    <el-dialog
+      title="模具维保"
+      :close-on-click-modal="false"
+      :visible.sync="mujuweibao"
+      width="500px"
+      @closed="mujuweibaoClosed"
+    >
+      <el-form
+        :model="weibaoForm"
+        size="mini"
+        :rules="weibaoRules"
+        ref="weibaoForm"
+      >
+        <el-form-item label="模具名称" label-width="120px">
+          {{ weibaoForm.mojuName }}
+        </el-form-item>
+        <el-form-item label="更新使用次数" label-width="120px" prop="mojuNub">
+          <el-input-number
+            v-model="weibaoForm.mojuNub"
+            style="width: 300px"
+            controls-position="right"
+          ></el-input-number>
+        </el-form-item>
+        <el-form-item label="维保人" label-width="120px" prop="weihuzhe">
+          <el-select
+            style="width: 300px"
+            v-model="weibaoForm.weihuzhe"
+            placeholder="请选择"
+            @change="weihuzheChange"
+          >
+            <el-option
+              v-for="item in formOptions"
+              :key="item.userID"
+              :label="item.userName"
+              :value="item.userID"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="维保时间" label-width="120px" prop="baoyangTime">
+          <el-date-picker
+            style="width: 300px"
+            v-model="weibaoForm.baoyangTime"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="维保类型" label-width="120px" prop="weibaotype">
+          <el-select v-model="weibaoForm.weibaotype" style="width: 300px">
+            <el-option label="保养" :value="1"> </el-option>
+            <el-option label="维修" :value="2"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="选择照片" label-width="120px" prop="img">
+          <div
+            class="choicePhoto"
+            v-for="(v, i) in weibaoForm.img"
+            :key="i"
+            style="width: 300px"
+          >
+            <div class="textPhoto">{{ v }}</div>
+            <div>
+              <el-button
+                type="danger"
+                icon="el-icon-close"
+                circle
+                size="mini"
+                @click="deleteChoice(i)"
+              ></el-button>
+            </div>
+          </div>
+          <el-button @click="selectComplete">选择文件</el-button>
+        </el-form-item>
+        <el-form-item label="备注" label-width="120px" prop="remarks">
+          <el-input
+            style="width: 300px"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容"
+            v-model="weibaoForm.remarks"
+          >
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="mujuweibao = false" size="mini">取 消</el-button>
+        <el-button type="primary" size="mini" @click="weibaoOK('weibaoForm')"
+          >确 定</el-button
+        >
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -207,6 +327,7 @@ export default {
       callback();
     };
     return {
+      queryCriteria: { name: "", time: "" },
       formInline: {
         productName: "",
         bandName: "",
@@ -220,6 +341,7 @@ export default {
         { label: "设定寿命", prop: "liftNub" },
         { label: "添加时间", prop: "createTime" },
         { label: "上次保养时间", prop: "baoyangTime" },
+        { label: "上次维修时间", prop: "weixiuTime" },
       ],
       currentPage: 1,
       pageSize: 10,
@@ -232,7 +354,9 @@ export default {
         mojuName: "",
         liftNub: "",
         modelList: [],
+        weihuzhe: [],
       },
+      formOptions: [],
       rules: {
         mojuName: [
           { required: true, message: "请输入模具名称", trigger: "blur" },
@@ -241,8 +365,8 @@ export default {
           { required: true, message: "请输入设定寿命", trigger: "blur" },
           { validator: validatorLiftNub, trigger: "blur" },
         ],
-        modelList: [
-          { required: true, message: "请选择适用型号", trigger: "blur" },
+        weihuzhe: [
+          { required: true, message: "请选择维护者", trigger: "blur" },
         ],
       },
       disabled: false,
@@ -263,6 +387,38 @@ export default {
       addModelForm: {
         modelName: "",
       },
+      //模具维保
+      mujuweibao: false,
+      weibaoForm: {},
+      weibaoRules: {
+        mojuNub: [
+          { required: true, message: "请输入更新使用次数", trigger: "blur" },
+        ],
+        weihuzhe: [
+          { required: true, message: "请选择维保人", trigger: "blur" },
+        ],
+        baoyangTime: [
+          {
+            required: true,
+            message: "维保时间不能为空",
+            trigger: "blur",
+          },
+        ],
+        weibaotype: [
+          {
+            required: true,
+            message: "维保类型不能为空",
+            trigger: "blur",
+          },
+        ],
+        remarks: [
+          {
+            required: true,
+            message: "备注不能为空",
+            trigger: "blur",
+          },
+        ],
+      },
     };
   },
   watch: {
@@ -279,8 +435,19 @@ export default {
     this.tableHeight = this.$refs.moidManagement.offsetHeight - 140;
     this.queryList();
     this.querymodelList();
+    this.queryUserList();
   },
   methods: {
+    // 人员查询
+    async queryUserList() {
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.queryUserList();
+
+      if (res.code === "1") {
+        this.formOptions = res.data;
+      }
+    },
     async queryList() {
       this.loading = this.$loading({
         lock: true,
@@ -293,17 +460,33 @@ export default {
       }, 30000);
       let res = null;
       // eslint-disable-next-line no-undef
-      res = await frmKuchun.mojuList(this.pageSize, this.currentPage - 1);
+      res = await frmKuchun.mojuList(
+        this.queryCriteria.name,
+        this.queryCriteria.time,
+        this.pageSize,
+        this.currentPage - 1
+      );
       console.log("模具查询: ", res);
-      this.total = res.data[0]["0"];
-      this.tableData = res.data[1];
-      for (let i = 0; i < this.tableData.length; i++) {
-        this.tableData[i].createTime = this.filterTime(
-          this.tableData[i].createTime
-        );
-        this.tableData[i].baoyangTime = this.filterTime(
-          this.tableData[i].baoyangTime
-        );
+      if (res.code === "1") {
+        this.total = res.data[0]["0"];
+        this.tableData = res.data[1];
+        for (let i = 0; i < this.tableData.length; i++) {
+          if (this.tableData[i].baoyangTime !== null) {
+            this.tableData[i].baoyangTime = this.filterTime(
+              this.tableData[i].baoyangTime
+            );
+          }
+          if (this.tableData[i].createTime !== null) {
+            this.tableData[i].createTime = this.filterTime(
+              this.tableData[i].createTime
+            );
+          }
+          if (this.tableData[i].weixiuTime !== null) {
+            this.tableData[i].weixiuTime = this.filterTime(
+              this.tableData[i].weixiuTime
+            );
+          }
+        }
       }
       this.loading.close();
     },
@@ -396,37 +579,81 @@ export default {
         });
         return;
       }
+      this.mujuweibao = true;
+      this.weibaoForm = { ...val };
       console.log("val: ", val);
-      this.$confirm(
-        "是否已完成" + val.mojuName + "模具维保工作，点击确定清0使用次数",
-        "提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
+      var date = new Date(); // 获取时间
+      var year = date.getFullYear(); // 获取年
+      var month = date.getMonth() + 1; // 获取月
+      var strDate = date.getDate(); // 获取日
+      this.weibaoForm.baoyangTime = year + "-" + month + "-" + strDate;
+      this.weibaoForm.img = [];
+    },
+    // 选择文件
+    async selectComplete() {
+      console.log(111);
+      // eslint-disable-next-line no-undef
+      let res = await frmKuchun.uploadImgTwo(1);
+      console.log("res: ", res);
+      if (res !== "") {
+        this.weibaoForm.img.push(res);
+        this.$forceUpdate();
+      }
+    },
+    //删除已选
+    deleteChoice(i) {
+      this.weibaoForm.img.splice(i, 1);
+      this.$forceUpdate();
+    },
+    weihuzheChange(v) {
+      for (let i = 0; i < this.formOptions.length; i++) {
+        if (this.formOptions[i].userID === v) {
+          this.weibaoForm.userName = this.formOptions[i].userName;
         }
-      )
-        .then(async () => {
-          let res = null;
+      }
+    },
+    weibaoOK(formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (valid) {
+          this.loading = this.$loading({
+            lock: true,
+            text: "正在查询",
+            spinner: "el-icon-loading",
+            background: "rgba(0, 0, 0, 0.7)",
+          });
+          setTimeout(() => {
+            this.loading.close();
+          }, 30000);
+          console.log(this.weibaoForm);
           // eslint-disable-next-line no-undef
-          res = await frmKuchun.mujuWeihu(val.mjID);
+          let res = await frmKuchun.mujuWeihu(
+            this.weibaoForm.mjID,
+            this.weibaoForm.weihuzhe,
+            this.weibaoForm.userName,
+            this.weibaoForm.baoyangTime,
+            this.weibaoForm.remarks,
+            this.weibaoForm.img,
+            this.weibaoForm.mojuNub,
+            this.weibaoForm.weibaotype
+          );
           console.log("res: ", res);
           if (res.data === "成功") {
-            this.$message({
-              type: "success",
-              message: "删除成功!",
-            });
             this.queryList();
+            this.mujuweibao = false;
           } else {
             this.$message.error(res.data);
           }
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消操作",
-          });
-        });
+          this.dialogFormVisible = false;
+          this.loading.close();
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    mujuweibaoClosed() {
+      this.$refs.weibaoForm.resetFields();
+      this.weibaoForm = {};
     },
     async modify(val) {
       this.user = JSON.parse(localStorage.getItem("user"));
@@ -470,7 +697,8 @@ export default {
             res = await frmKuchun.mojuAdd(
               this.form.mojuName,
               this.form.liftNub * 1,
-              this.form.modelList
+              this.form.modelList,
+              this.form.weihuzhe
             );
           } else {
             // eslint-disable-next-line no-undef
@@ -478,7 +706,8 @@ export default {
               this.form.mjID,
               this.form.mojuName,
               this.form.liftNub * 1,
-              this.form.modelList
+              this.form.modelList,
+              this.form.weihuzhe
             );
           }
           console.log("res: ", res);
@@ -487,6 +716,7 @@ export default {
           } else {
             this.$message.error(res.data);
           }
+          this.modelSelect = [];
           this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
@@ -499,12 +729,9 @@ export default {
       this.$refs.ruleForm.resetFields();
       this.disabled = false;
       for (const key in this.form) {
-        // if (key === "modelList") {
-        //   this.form[key] = [];
-        // } else {
         this.form[key] = "";
-        // }
       }
+      this.modelSelect = [];
     },
     deleteData(v) {
       this.user = JSON.parse(localStorage.getItem("user"));
@@ -594,6 +821,21 @@ export default {
           cursor: pointer;
         }
       }
+    }
+  }
+  .button {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+  }
+  .choicePhoto {
+    background: #ebeef5;
+    padding: 5px 5px;
+    box-sizing: border-box;
+    display: flex;
+    margin: 5px 0px;
+    .textPhoto {
+      line-height: 14px;
     }
   }
 }

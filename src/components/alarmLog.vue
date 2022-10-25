@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-14 10:47:01
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 13:33:37
+ * @LastEditTime: 2022-10-25 11:36:03
  * @FilePath: \yjxt-web\src\components\alarmLog.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -150,10 +150,10 @@ export default {
         yujingValue: "",
         imgPath: "",
         plcSetUp: "",
-        notice: [],
+        notice: 0,
         menuValue: "",
       },
-      handleForm: { notice: [] },
+      handleForm: { notice: 0 },
       plcOption: [],
     };
   },
@@ -334,7 +334,7 @@ export default {
       }
       if (key === "3") {
         this.form = JSON.parse(JSON.stringify(v));
-        this.form.notice = [];
+        this.form.notice = 0;
         this.form.menuValue = v.menuName;
         this.form.menuValueID = v.menuID;
         this.form.shopTime = this.form.shopTime + "";

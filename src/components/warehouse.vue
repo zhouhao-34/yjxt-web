@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-29 16:06:06
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-21 09:12:41
+ * @LastEditTime: 2022-10-25 09:54:30
  * @FilePath: \yjxt-web\src\components\warehouse.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -10,7 +10,20 @@
   <div class="warehouse" ref="warehouse">
     <div>
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="产品名称：">
+        <el-form-item label="关联设备：">
+          <!-- <el-input
+            v-model="formInline.menuID"
+            placeholder="请输入内容"
+          ></el-input> -->
+          <el-cascader
+            clearable
+            v-model="formInline.menuID"
+            :show-all-levels="false"
+            :options="equipmentNameOptions"
+            :props="cascaderProps"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="配件名称：">
           <el-input
             v-model="formInline.productName"
             placeholder="请输入内容"
@@ -29,6 +42,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item>
+          <el-button @click="reset">重置</el-button>
           <el-button type="primary" @click="queryList">查询</el-button>
         </el-form-item>
       </el-form>
@@ -56,6 +70,19 @@
             <div class="ellipsis" :title="scope.row[v.prop]">
               {{ scope.row[v.prop] }}
             </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="适用设备" align="center">
+          <!-- eslint-disable-next-line vue/no-unused-vars -->
+          <template slot-scope="scope">
+            <span
+              v-for="(v, i) in scope.row.shiyong"
+              :key="i"
+              class="screen"
+              @click="screenClick(v)"
+            >
+              {{ v.menuName }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="280">
@@ -101,6 +128,7 @@
       >
       </el-pagination>
     </div>
+    <!-- 出入库 -->
     <el-dialog
       @close="dialogClose"
       :title="title"
@@ -109,7 +137,7 @@
       width="500px"
     >
       <el-form :model="form" size="mini" :rules="rules" ref="ruleForm">
-        <el-form-item label="产品名称" label-width="120px" prop="productName">
+        <el-form-item label="配件名称" label-width="120px" prop="productName">
           <el-input
             style="width: 300px"
             :disabled="disabled"
@@ -252,6 +280,7 @@
         >
       </div>
     </el-dialog>
+    <!-- 适用设备详情 -->
     <el-dialog title="适用设备详情" :visible.sync="dialogTableVisible">
       <el-table :data="tableDataTwo" border height="300px">
         <el-table-column
@@ -270,6 +299,7 @@
         </el-table-column>
       </el-table>
     </el-dialog>
+    <!-- 添加适用设备 -->
     <el-dialog
       title="添加适用设备"
       :visible.sync="addApplyVisible"
@@ -311,6 +341,7 @@ export default {
     };
     return {
       formInline: {
+        menuID: [],
         productName: "",
         bandName: "",
         modelName: "",
@@ -319,7 +350,7 @@ export default {
       tableData: [],
       tableHeader: [
         { label: "库存编号", prop: "ckID" },
-        { label: "产品名称", prop: "productName" },
+        { label: "配件名称", prop: "productName" },
         { label: "品牌", prop: "bandName" },
         { label: "型号", prop: "modelName" },
         { label: "库存数量", prop: "ckNub" },
@@ -341,7 +372,7 @@ export default {
       numberData: [],
       rules: {
         productName: [
-          { required: true, message: "请输入产品名称", trigger: "blur" },
+          { required: true, message: "请输入配件名称", trigger: "blur" },
         ],
         bandName: [{ required: true, message: "请输入品牌", trigger: "blur" }],
         modelName: [{ required: true, message: "请输入型号", trigger: "blur" }],
@@ -356,7 +387,11 @@ export default {
       disabled: false,
       maxNum: 0,
       equipmentNameOptions: [],
-
+      cascaderProps: {
+        value: "menuID",
+        label: "menuName",
+        children: "children",
+      },
       options: [],
 
       dialogTableVisible: false,
@@ -413,7 +448,7 @@ export default {
       }
       this.loading.close();
     },
-    // 查询菜单
+    // 查询设备
     async queryTreeData() {
       let res = null;
       // eslint-disable-next-line no-undef
@@ -451,7 +486,7 @@ export default {
           }
         }
         this.equipmentNameOptions = arr1;
-        console.log("this.equipmentNameOptions: ", this.equipmentNameOptions);
+        console.log("this.查询设备: ", this.equipmentNameOptions);
       }
     },
     // 子级菜单分类
@@ -489,8 +524,12 @@ export default {
         this.loading.close();
       }, 30000);
       let res = null;
+      console.log("this.formInline.menuID", this.formInline.menuID);
       // eslint-disable-next-line no-undef
       res = await frmKuchun.warehouseList(
+        this.formInline.menuID.length > 0
+          ? this.formInline.menuID[this.formInline.menuID.length - 1] + ""
+          : "",
         this.formInline.productName,
         this.formInline.bandName,
         this.formInline.modelName,
@@ -501,6 +540,21 @@ export default {
       this.total = res.data[0]["0"];
       this.tableData = res.data[1];
       this.loading.close();
+    },
+    //重置查询条件
+    reset() {
+      this.formInline = {
+        menuID: [],
+        productName: "",
+        bandName: "",
+        modelName: "",
+      };
+      this.queryList();
+    },
+    screenClick(v) {
+      console.log("v: ", v);
+      this.formInline.menuID = [v.menuID];
+      this.queryList();
     },
     addClick() {
       this.title = "入库";
@@ -651,9 +705,15 @@ export default {
     dialogClose() {
       this.$refs.ruleForm.resetFields();
       this.disabled = false;
-      for (const key in this.form) {
-        this.form[key] = "";
-      }
+      this.form = {
+        productName: "",
+        bandName: "",
+        modelName: "",
+        ckNub: "",
+        userID: "",
+      };
+      this.numberData = [];
+      this.transferValue = [];
     },
     deleteData(v) {
       this.user = JSON.parse(localStorage.getItem("user"));
@@ -759,6 +819,12 @@ export default {
     .el-button {
       margin: 10px 0px;
     }
+  }
+  .screen {
+    margin: 0px 5px;
+    color: #409eff;
+    cursor: pointer;
+    text-decoration: underline;
   }
   .el-dialog {
     .el-table {
