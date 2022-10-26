@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-11 14:12:57
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 12:22:33
+ * @LastEditTime: 2022-10-26 15:06:34
  * @FilePath: \yjxt-web\src\components\equipmentAssembly\table.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -197,13 +197,12 @@ export default {
   created() {},
   mounted() {
     this.timer = setInterval(() => {
-      this.equipmentConditionQuery(
-        this.nodeData[this.nodeData.length - 1].menuID
-      );
+      if (this.nodeData.length > 0) {
+        this.equipmentConditionQuery(
+          this.nodeData[this.nodeData.length - 1].menuID
+        );
+      }
     }, 60000);
-    this.equipmentConditionQuery(
-      this.nodeData[this.nodeData.length - 1].menuID
-    );
     this.queryPlc();
   },
   beforeDestroy() {
@@ -239,7 +238,7 @@ export default {
         this.pageSize
       );
       this.total = res.data[0]["0"];
-
+      console.log("biaoge ");
       if (res.code === "1") {
         for (let i = 0; i < res.data[1].length; i++) {
           res.data[1][i].surplusLife =
@@ -279,29 +278,21 @@ export default {
         // eslint-disable-next-line no-undef
         res = await frmKuchun.proEdit_list(v.proID);
         this.form.plcSetUp = res.data[0].plcListID;
+        this.form.plcListID = res.data[0].plcListID;
         let res1 = null;
         // eslint-disable-next-line no-undef
         res1 = await frmKuchun.userList(v.proID);
-
         this.form.notice = 0;
         for (let i = 0; i < res1.data.length; i++) {
           this.form.notice = res1.data[i].userID;
         }
-        if (this.nodeData.length > 0) {
-          this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
-          this.form.menuValueID =
-            this.nodeData[this.nodeData.length - 1].menuID;
-        } else {
-          this.form.menuValue = v.menuName;
-          this.form.menuValueID = v.menuID;
-        }
+        this.form.menuValue = v.menuName;
+        this.form.menuValueID = v.menuID;
         if (this.form.unit !== "自然日") {
           // 查询plc数据
           let res2 = null;
           // eslint-disable-next-line no-undef
           res2 = await frmKuchun.plc_listList(this.form.plcListID * 1);
-          console.log("this.form.plcListID: ", this.form);
-          console.log("res2: ", res2);
           this.plcForm = res2.data[0];
           this.plcForm.chufa += "";
           this.plcForm.PLC_addressType1 = res2.data[0].where_PLC_addressType;
@@ -313,28 +304,16 @@ export default {
         // this.handleDialogFormVisible = true;
         this.$refs.dialogIndex.handleDialogFormVisible = true;
         this.handleForm = JSON.parse(JSON.stringify(v));
-        if (this.nodeData.length > 0) {
-          this.handleForm.menuValue =
-            this.nodeData[this.nodeData.length - 1].label;
-          this.handleForm.menuValueID =
-            this.nodeData[this.nodeData.length - 1].menuID;
-        } else {
-          this.handleForm.menuValue = v.menuName;
-          this.handleForm.menuValueID = v.menuID;
-        }
+
+        this.handleForm.menuValue = v.menuName;
+        this.handleForm.menuValueID = v.menuID;
       }
       if (key === "3") {
         this.form = JSON.parse(JSON.stringify(v));
         console.log("this.form: ", this.form);
         this.form.notice = 0;
-        if (this.nodeData.length > 0) {
-          this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
-          this.form.menuValueID =
-            this.nodeData[this.nodeData.length - 1].menuID;
-        } else {
-          this.form.menuValue = v.menuName;
-          this.form.menuValueID = v.menuID;
-        }
+        this.form.menuValue = v.menuName;
+        this.form.menuValueID = v.menuID;
         this.form.shopTime = this.form.shopTime + "";
         this.form.lifeValue = this.form.lifeValue + "";
         let res = null;
@@ -369,7 +348,9 @@ export default {
             // eslint-disable-next-line no-undef
             res = await frmKuchun.proDel(v.proID);
             console.log("res: ", res);
-            this.equipmentConditionQuery(v[v.length - 1].menuID);
+            this.equipmentConditionQuery(
+              this.nodeData[this.nodeData.length - 1].menuID
+            );
             this.$message({
               type: "success",
               message: "删除成功!",

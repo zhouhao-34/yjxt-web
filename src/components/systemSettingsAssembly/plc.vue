@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-14 14:00:42
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-19 16:48:41
+ * @LastEditTime: 2022-10-26 09:17:00
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\plc.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -229,56 +229,10 @@ export default {
   created() {},
   mounted() {
     this.tableHeight = this.$refs.settingsPLC.offsetHeight - 20;
-    this.queryTreeData();
+    this.equipmentNameOptions = JSON.parse(sessionStorage.getItem("treeData"));
     this.queryList();
   },
   methods: {
-    // 查询菜单
-    async queryTreeData() {
-      let res = null;
-      // eslint-disable-next-line no-undef
-      res = await frmKuchun.queryTreeData();
-
-      if (res.code === "1") {
-        // 所有数据
-        let arr = res.data;
-        // 筛选出来的一级菜单
-        let arr1 = [];
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].parentID === 0) {
-            arr1.push({ ...arr[i] });
-            arr.splice(i, 1);
-            i--;
-          }
-        }
-        for (let i = 0; i < arr1.length; i++) {
-          let array = this.children(arr, arr1[i].menuID);
-          if (array.length > 0) {
-            arr1[i].children = array;
-          }
-        }
-        this.equipmentNameOptions = arr1;
-      }
-    },
-    // 子级菜单分类
-    children(arr, menuID) {
-      if (arr.length === 0) {
-        return [];
-      }
-      let array = [];
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].parentID === menuID) {
-          array.push({ ...arr[i] });
-        }
-      }
-      for (let i = 0; i < array.length; i++) {
-        let array2 = this.children(arr, array[i].menuID);
-        if (array2.length > 0) {
-          array[i].children = array2;
-        }
-      }
-      return array;
-    },
     async queryList() {
       this.loading = this.$loading({
         lock: true,

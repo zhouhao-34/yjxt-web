@@ -2,14 +2,19 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-19 13:02:46
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-17 09:01:52
+ * @LastEditTime: 2022-10-26 10:47:55
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\production.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="production" ref="production">
     <div class="production-form">
-      <el-form :inline="true" :model="productionForm" class="demo-form-inline">
+      <el-form
+        :inline="true"
+        size="mini"
+        :model="productionForm"
+        class="demo-form-inline"
+      >
         <el-form-item label="生产型号">
           <el-input
             v-model="productionForm.model"
@@ -34,7 +39,11 @@
     </div>
     <div class="systemSettings-table">
       <div class="add">
-        <el-button type="primary" icon="el-icon-plus" @click="adduser"
+        <el-button
+          size="mini"
+          type="primary"
+          icon="el-icon-plus"
+          @click="adduser"
           >新增生产计划</el-button
         >
       </div>
@@ -258,7 +267,7 @@ export default {
     setTimeout(() => {
       this.loading.close();
     }, 30000);
-    this.tableHeight = this.$refs.production.offsetHeight - 120;
+    this.tableHeight = this.$refs.production.offsetHeight - 80;
     this.queryList();
     this.queryShiftName();
     this.queryModel();
@@ -456,7 +465,7 @@ export default {
 <style scoped lang="scss">
 .production {
   .production-form {
-    margin-top: 20px;
+    margin-top: 5px;
   }
   .systemSettings-table {
     width: 100%;
@@ -468,7 +477,7 @@ export default {
     .add {
       position: absolute;
       right: 0px;
-      top: -60px;
+      top: -45px;
     }
   }
   .el-dialog {

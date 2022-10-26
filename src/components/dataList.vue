@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 11:11:14
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 09:52:54
+ * @LastEditTime: 2022-10-26 14:00:03
  * @FilePath: \yjxt-web\src\components\dataList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -307,7 +307,7 @@ export default {
       let res = null;
       // eslint-disable-next-line no-undef
       res = await frmKuchun.queryTreeData();
-      if (res.code === "1") {
+      if (res.code === "1" && res.data.length > 0) {
         // 所有数据
         let arr = res.data;
         // 筛选出来的一级菜单
@@ -334,6 +334,7 @@ export default {
         this.$store.commit("setNodeData", this.nodeData);
         console.log("this.treeData: ", this.treeData);
         this.equipmentNameOptions = arr1;
+        sessionStorage.setItem("treeData", JSON.stringify(arr1));
       }
     },
     // 子级菜单分类
@@ -443,7 +444,6 @@ export default {
         if (node.parent.data.menuID !== undefined) {
           this.menuForm.menuID = node.parent.data.menuID;
         }
-
         this.menuNode = node;
         this.menuData = data;
         this.menuForm.name = node.data.menuName;

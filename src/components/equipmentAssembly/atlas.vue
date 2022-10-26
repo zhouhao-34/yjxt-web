@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 13:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 12:22:25
+ * @LastEditTime: 2022-10-26 15:01:00
  * @FilePath: \yjxt-web\src\components\equipmentAssembly\atlas.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -329,8 +329,9 @@ export default {
       res = await frmKuchun.plcList();
       this.plcOption = res.data;
     },
-    // 根据菜单id查设备
+    // 根据设备id查保养项
     async equipmentConditionQuery(menuID) {
+      console.log("menuID: ", menuID);
       this.loading = this.$loading({
         lock: true,
         text: "正在查询",
@@ -347,8 +348,8 @@ export default {
         this.currentPage - 1,
         this.pageSize
       );
+      console.log("liebiao");
       this.total = res.data[0]["0"];
-
       if (res.code === "1") {
         for (let i = 0; i < res.data[1].length; i++) {
           res.data[1][i].surplusLife =
@@ -431,55 +432,34 @@ export default {
         for (let i = 0; i < res1.data.length; i++) {
           this.form.notice = res1.data[i].userID;
         }
-        if (this.nodeData.length > 0) {
-          this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
-          this.form.menuValueID =
-            this.nodeData[this.nodeData.length - 1].menuID;
-        } else {
-          this.form.menuValue = v.menuName;
-          this.form.menuValueID = v.menuID;
-        }
+        this.form.menuValue = v.menuName;
+        this.form.menuValueID = v.menuID;
         if (this.form.unit !== "自然日") {
           // 查询plc数据
           let res2 = null;
           // eslint-disable-next-line no-undef
           res2 = await frmKuchun.plc_listList(this.form.plcListID * 1);
-          console.log("this.form.plcListID: ", this.form);
-          console.log("res2: ", res2);
           this.plcForm = res2.data[0];
           this.plcForm.chufa += "";
           this.plcForm.PLC_addressType1 = res2.data[0].where_PLC_addressType;
         }
         this.dialogTitle = "修改";
         this.$refs.dialogIndex.dialogFormVisible = true;
-        // this.dialogFormVisible = true;
       }
       if (key === "2") {
         // this.handleDialogFormVisible = true;
         this.$refs.dialogIndex.handleDialogFormVisible = true;
         this.handleForm = JSON.parse(JSON.stringify(v));
-        if (this.nodeData.length > 0) {
-          this.handleForm.menuValue =
-            this.nodeData[this.nodeData.length - 1].label;
-          this.handleForm.menuValueID =
-            this.nodeData[this.nodeData.length - 1].menuID;
-        } else {
-          this.handleForm.menuValue = v.menuName;
-          this.handleForm.menuValueID = v.menuID;
-        }
+
+        this.handleForm.menuValue = v.menuName;
+        this.handleForm.menuValueID = v.menuID;
       }
       if (key === "3") {
         this.form = JSON.parse(JSON.stringify(v));
         console.log("this.form: ", this.form);
         this.form.notice = 0;
-        if (this.nodeData.length > 0) {
-          this.form.menuValue = this.nodeData[this.nodeData.length - 1].label;
-          this.form.menuValueID =
-            this.nodeData[this.nodeData.length - 1].menuID;
-        } else {
-          this.form.menuValue = v.menuName;
-          this.form.menuValueID = v.menuID;
-        }
+        this.form.menuValue = v.menuName;
+        this.form.menuValueID = v.menuID;
         this.form.shopTime = this.form.shopTime + "";
         this.form.lifeValue = this.form.lifeValue + "";
         let res = null;

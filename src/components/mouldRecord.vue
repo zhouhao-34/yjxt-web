@@ -2,13 +2,13 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-10-23 11:16:52
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-24 19:19:31
+ * @LastEditTime: 2022-10-26 15:13:17
  * @FilePath: \yjxt-web\src\components\mould.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="mould" ref="mould">
-    <el-form :inline="true" :model="form" class="demo-form-inline">
+    <el-form :inline="true" size="mini" :model="form" class="demo-form-inline">
       <el-form-item label="维保类型">
         <el-select v-model="form.type" clearable placeholder="请选择">
           <el-option label="全部" :value="0"> </el-option>
@@ -127,7 +127,7 @@ export default {
     } else {
       this.form.type = 2;
     }
-    this.tableHeight = this.$refs.mould.offsetHeight - 140;
+    this.tableHeight = this.$refs.mould.offsetHeight - 120;
     this.queryList();
   },
   methods: {

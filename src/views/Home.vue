@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 11:33:08
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-24 19:38:58
+ * @LastEditTime: 2022-10-26 09:34:11
  * @FilePath: \yjxt-web\src\views\Home.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -180,8 +180,56 @@ export default {
       this.user = user;
     }
     console.log("  this.user: ", this.user);
+    setTimeout(() => {
+      this.queryTreeData();
+    }, 1000);
   },
   methods: {
+    // 查询菜单
+    async queryTreeData() {
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.queryTreeData();
+      if (res.code === "1") {
+        // 所有数据
+        let arr = res.data;
+        // 筛选出来的一级菜单
+        let arr1 = [];
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].parentID === 0) {
+            arr1.push({ ...arr[i] });
+            arr.splice(i, 1);
+            i--;
+          }
+        }
+        for (let i = 0; i < arr1.length; i++) {
+          let array = this.children(arr, arr1[i].menuID);
+          if (array.length > 0) {
+            arr1[i].children = array;
+          }
+        }
+        sessionStorage.setItem("treeData", JSON.stringify(arr1));
+      }
+    },
+    // 子级菜单分类
+    children(arr, menuID) {
+      if (arr.length === 0) {
+        return [];
+      }
+      let array = [];
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].parentID === menuID) {
+          array.push({ ...arr[i] });
+        }
+      }
+      for (let i = 0; i < array.length; i++) {
+        let array2 = this.children(arr, array[i].menuID);
+        if (array2.length > 0) {
+          array[i].children = array2;
+        }
+      }
+      return array;
+    },
     // eslint-disable-next-line no-unused-vars
     handleSelect(key, keyPath) {
       if (key !== null) {

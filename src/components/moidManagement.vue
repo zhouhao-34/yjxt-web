@@ -2,14 +2,19 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-31 13:05:57
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 13:38:57
+ * @LastEditTime: 2022-10-26 15:56:37
  * @FilePath: \yjxt-web\src\components\moidManagement.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="moidManagement" ref="moidManagement">
     <div>
-      <el-form :inline="true" :model="queryCriteria" class="demo-form-inline">
+      <el-form
+        :inline="true"
+        size="mini"
+        :model="queryCriteria"
+        class="demo-form-inline"
+      >
         <el-form-item label="模具名称">
           <el-input
             v-model="queryCriteria.name"
@@ -32,7 +37,9 @@
       </el-form>
     </div>
     <div class="button">
-      <el-button @click="addClick" type="primary">添加模具</el-button>
+      <el-button @click="addClick" size="mini" type="primary"
+        >添加模具</el-button
+      >
     </div>
     <div>
       <el-table
@@ -121,7 +128,6 @@
           <el-select
             style="width: 300px"
             v-model="form.weihuzhe"
-            multiple
             placeholder="请选择"
           >
             <el-option
@@ -354,7 +360,7 @@ export default {
         mojuName: "",
         liftNub: "",
         modelList: [],
-        weihuzhe: [],
+        weihuzhe: "",
       },
       formOptions: [],
       rules: {
@@ -432,7 +438,7 @@ export default {
   created() {},
   mounted() {
     console.log(this.user);
-    this.tableHeight = this.$refs.moidManagement.offsetHeight - 140;
+    this.tableHeight = this.$refs.moidManagement.offsetHeight - 120;
     this.queryList();
     this.querymodelList();
     this.queryUserList();
@@ -619,7 +625,7 @@ export default {
         if (valid) {
           this.loading = this.$loading({
             lock: true,
-            text: "正在查询",
+            text: "正在操作",
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
           });
@@ -681,6 +687,7 @@ export default {
       this.title = "修改模具";
       this.form = {
         ...val,
+        weihuzhe: val.weihuzhe.length > 0 ? val.weihuzhe[0].userID : "",
       };
       this.form.modelList = [];
       this.modelSelect = res.data;

@@ -2,14 +2,19 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-29 16:06:06
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 09:54:30
+ * @LastEditTime: 2022-10-26 11:37:07
  * @FilePath: \yjxt-web\src\components\warehouse.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="warehouse" ref="warehouse">
     <div>
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+      <el-form
+        :inline="true"
+        size="mini"
+        :model="formInline"
+        class="demo-form-inline"
+      >
         <el-form-item label="关联设备：">
           <!-- <el-input
             v-model="formInline.menuID"
@@ -42,13 +47,13 @@
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button @click="reset">重置</el-button>
-          <el-button type="primary" @click="queryList">查询</el-button>
+          <!-- <el-button @click="reset">重置</el-button> -->
+          <el-button type="primary" @click="queryClick">查询</el-button>
         </el-form-item>
       </el-form>
     </div>
     <div class="button">
-      <el-button @click="addClick">新品入库</el-button>
+      <el-button size="mini" @click="addClick">新品入库</el-button>
     </div>
     <div>
       <el-table
@@ -85,12 +90,12 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="280">
+        <el-table-column label="操作" align="center" width="200">
           <!-- eslint-disable-next-line vue/no-unused-vars -->
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="details(scope.row)"
+            <!-- <el-button type="text" size="mini" @click="details(scope.row)"
               >适用设备详情</el-button
-            >
+            > -->
             <el-button type="text" size="mini" @click="enterClick(scope.row)"
               >增加库存</el-button
             >
@@ -419,9 +424,9 @@ export default {
   },
   created() {},
   mounted() {
-    this.tableHeight = this.$refs.warehouse.offsetHeight - 140;
+    this.tableHeight = this.$refs.warehouse.offsetHeight - 120;
     this.queryList();
-    this.queryTreeData();
+    this.equipmentNameOptions = JSON.parse(sessionStorage.getItem("treeData"));
     this.queryUserList();
   },
   methods: {
@@ -448,70 +453,6 @@ export default {
       }
       this.loading.close();
     },
-    // 查询设备
-    async queryTreeData() {
-      let res = null;
-      // eslint-disable-next-line no-undef
-      res = await frmKuchun.queryTreeData();
-
-      if (res.code === "1") {
-        // 所有数据
-        let arr = res.data;
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].menuType === 2) {
-            this.transferData.push({
-              key: arr[i].menuID,
-              label: arr[i].menuName,
-            });
-          }
-        }
-        console.log("arr: ", arr);
-        // 筛选出来的一级菜单
-        let arr1 = [];
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].parentID === 0) {
-            arr1.push({
-              ...arr[i],
-              id: arr[i].menuID + "",
-              pid: 0,
-            });
-            arr.splice(i, 1);
-            i--;
-          }
-        }
-        for (let i = 0; i < arr1.length; i++) {
-          let array = this.children(arr, arr1[i].menuID);
-          if (array.length > 0) {
-            arr1[i].children = array;
-          }
-        }
-        this.equipmentNameOptions = arr1;
-        console.log("this.查询设备: ", this.equipmentNameOptions);
-      }
-    },
-    // 子级菜单分类
-    children(arr, menuID) {
-      if (arr.length === 0) {
-        return [];
-      }
-      let array = [];
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].parentID === menuID) {
-          array.push({
-            ...arr[i],
-            id: arr[i].menuID + "",
-            pid: arr[i].menuID + "-" + (i + 1),
-          });
-        }
-      }
-      for (let i = 0; i < array.length; i++) {
-        let array2 = this.children(arr, array[i].menuID);
-        if (array2.length > 0) {
-          array[i].children = array2;
-        }
-      }
-      return array;
-    },
     // 查询列表数据
     async queryList() {
       this.loading = this.$loading({
@@ -524,6 +465,7 @@ export default {
         this.loading.close();
       }, 30000);
       let res = null;
+
       console.log("this.formInline.menuID", this.formInline.menuID);
       // eslint-disable-next-line no-undef
       res = await frmKuchun.warehouseList(
@@ -542,13 +484,10 @@ export default {
       this.loading.close();
     },
     //重置查询条件
-    reset() {
-      this.formInline = {
-        menuID: [],
-        productName: "",
-        bandName: "",
-        modelName: "",
-      };
+    queryClick() {
+      if (this.formInline.menuID.length === 1) {
+        this.formInline.menuID = [];
+      }
       this.queryList();
     },
     screenClick(v) {

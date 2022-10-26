@@ -1,7 +1,12 @@
 <template>
   <div class="viewing" ref="viewing">
     <div class="viewing-form">
-      <el-form :inline="true" :model="viewingForm" class="demo-form-inline">
+      <el-form
+        :inline="true"
+        size="mini"
+        :model="viewingForm"
+        class="demo-form-inline"
+      >
         <el-form-item label="生产型号">
           <el-input
             v-model="viewingForm.model"
@@ -121,7 +126,7 @@ export default {
     setTimeout(() => {
       this.loading.close();
     }, 30000);
-    this.tableHeight = this.$refs.viewing.offsetHeight - 120;
+    this.tableHeight = this.$refs.viewing.offsetHeight - 80;
     this.queryList();
   },
   methods: {
@@ -209,11 +214,10 @@ export default {
 <style scoped lang="scss">
 .viewing {
   .viewing-form {
-    margin-top: 20px;
+    margin-top: 5px;
   }
   .systemSettings-table {
     width: 100%;
-    margin-top: 10px;
     position: relative;
     .pagination {
       text-align: right;

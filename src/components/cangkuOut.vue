@@ -2,14 +2,19 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-31 12:35:30
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-08-31 13:00:09
+ * @LastEditTime: 2022-10-26 10:52:59
  * @FilePath: \yjxt-web\src\components\cangkuOut.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div class="cangkuOut" ref="cangkuOut">
     <div>
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+      <el-form
+        :inline="true"
+        size="mini"
+        :model="formInline"
+        class="demo-form-inline"
+      >
         <el-form-item label="产品名称：">
           <el-input
             v-model="formInline.productName"
@@ -119,7 +124,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.tableHeight = this.$refs.cangkuOut.offsetHeight - 140;
+    this.tableHeight = this.$refs.cangkuOut.offsetHeight - 120;
     this.queryList();
   },
   methods: {

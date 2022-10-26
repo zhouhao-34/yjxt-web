@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 09:23:28
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-14 16:53:03
+ * @LastEditTime: 2022-10-26 09:24:07
  * @FilePath: \yujing-vue\src\components\README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -52,7 +52,10 @@
 plc设置
 
 ### user
-维保人员设置
+账号管理
+
+### manual
+保养手册管理
 
 ### model
 型号管理

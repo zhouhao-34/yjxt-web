@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-05 14:31:12
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 13:39:44
+ * @LastEditTime: 2022-10-26 15:07:18
  * @FilePath: \yjxt-web\src\components\dialog\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,16 +30,6 @@
         <el-form-item label="所属分类" prop="menuValue">
           {{ formadd.menuValue }}
         </el-form-item>
-        <!-- <el-form-item label="品牌" prop="brand">
-          <el-input v-model="formadd.brand" style="width: 400px"></el-input>
-        </el-form-item>
-        <el-form-item label="型号" prop="model">
-          <el-input
-            v-model="formadd.model"
-            style="width: 400px"
-            @blur="queryTuijianYJ('formadd')"
-          ></el-input>
-        </el-form-item> -->
         <el-form-item label="保养内容" prop="proName">
           <el-input v-model="formadd.proName" style="width: 400px"></el-input>
         </el-form-item>
@@ -77,25 +67,6 @@
             </el-popover>
           </div>
         </el-form-item>
-        <!-- <el-form-item label="采购周期" required v-if="dialogTitle !== '修改'">
-          <div style="display: flex">
-            <el-form-item prop="shopTime" style="width: 200px">
-              <el-input-number
-                style="width: 200px"
-                :min="1"
-                :max="300"
-                v-model="formadd.shopTime"
-                controls-position="right"
-              ></el-input-number>
-            </el-form-item>
-            <el-form-item prop="shopTimeType">
-              <el-select v-model="formadd.shopTimeType" style="width: 200px">
-                <el-option label="工作日" value="工作日"> </el-option>
-                <el-option label="自然日" value="自然日"> </el-option>
-              </el-select>
-            </el-form-item>
-          </div>
-        </el-form-item> -->
         <el-form-item
           label="预警值"
           prop="yujingValue"
@@ -115,14 +86,6 @@
             ></el-input-number>
           </div>
         </el-form-item>
-        <!-- <el-form-item
-          label="推荐预警值"
-          :key="formadd.recommend"
-          v-if="dialogTitle !== '修改'"
-        >
-          <span v-if="formadd.recommend > 0">历史同型号单日消耗</span>
-          <span v-if="formadd.recommend > 0">{{ formadd.recommend }}</span>
-        </el-form-item> -->
         <el-form-item
           label="PLC设备"
           prop="plcSetUp"
@@ -177,7 +140,7 @@
         </el-form-item>
 
         <el-form-item :label="'报警通知'" prop="notice">
-          <el-select v-model="handleFormtwo.notice" style="width: 400px">
+          <el-select v-model="formadd.notice" style="width: 400px">
             <el-option
               :label="v.userName"
               :value="v.userID"
@@ -573,7 +536,7 @@
 export default {
   name: "",
   components: {
-    // [Button.name]: Button // 此处是引入组件名字的方法
+    // [Button.name]:  0Button // 此处是引入组件名字的方法
   },
   props: {
     // 添加、修改对话框标题
@@ -597,7 +560,7 @@ export default {
           yujingValue: "",
           imgPath: "",
           plcSetUp: "",
-          notice: 0,
+          notice: "",
           menuValue: "",
         };
       },
@@ -606,7 +569,7 @@ export default {
     handleForm: {
       type: Object,
       default: () => {
-        return { notice: 0 };
+        return { notice: "" };
       },
     },
     // 设置plc表单
@@ -930,7 +893,7 @@ export default {
             yujingValue: "",
             imgPath: "",
             plcSetUp: "",
-            notice: 0,
+            notice: "",
             menuValue: "",
           };
         }
@@ -991,7 +954,6 @@ export default {
       let res = null;
       // eslint-disable-next-line no-undef
       res = await frmKuchun.queryUserList();
-
       if (res.code === "1") {
         this.noticeOption = res.data;
       }
@@ -1084,7 +1046,6 @@ export default {
             console.log(proList, this.formadd.notice);
             // eslint-disable-next-line no-undef
             res = await frmKuchun.proEdit(proList, this.formadd.notice);
-            console.log("res: ", res);
           } else {
             let proList = [
               this.formadd.menuValueID,
@@ -1115,7 +1076,9 @@ export default {
           }
           loading.close();
           console.log("res: ", res);
-          this.dialogFormVisible = false;
+          if (res.data) {
+            this.dialogFormVisible = false;
+          }
         } else {
           return false;
         }
@@ -1199,7 +1162,7 @@ export default {
         if (valid) {
           let loading = this.$loading({
             lock: true,
-            text: "正在查询",
+            text: "正在操作",
             spinner: "el-icon-loading",
             background: "rgba(0, 0, 0, 0.7)",
           });

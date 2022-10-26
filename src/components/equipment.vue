@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 12:59:04
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 11:37:31
+ * @LastEditTime: 2022-10-26 14:04:15
  * @FilePath: \yjxt-web\src\components\equipment.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -127,7 +127,6 @@ export default {
         chuli: "",
         PLC_addressType1: "",
       },
-      loading: null,
       timer: null,
       user: JSON.parse(localStorage.getItem("user")),
     };
@@ -152,15 +151,6 @@ export default {
   },
   created() {},
   mounted() {
-    this.loading = this.$loading({
-      lock: true,
-      text: "正在查询",
-      spinner: "el-icon-loading",
-      background: "rgba(0, 0, 0, 0.7)",
-    });
-    setTimeout(() => {
-      this.loading.close();
-    }, 30000);
     window.onresize = () => {
       return (() => {
         this.containerHeight = this.$refs.equipment.clientHeight - 40;

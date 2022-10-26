@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-10-24 10:30:04
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-25 13:40:12
+ * @LastEditTime: 2022-10-26 16:24:47
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\manual.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -10,7 +10,7 @@
   <div class="manual" ref="manual">
     <el-form
       :inline="true"
-      :model="queryCriteria"
+      :model="queryForm"
       size="mini"
       class="demo-form-inline"
     >
@@ -142,20 +142,15 @@
           <el-button v-if="form.type === 2" @click="xzmuju">选择模具</el-button>
         </el-form-item>
         <el-form-item label="选择文件" prop="img" label-width="100px">
-          <div
-            class="choicePhoto"
-            v-for="(v, i) in form.img"
-            :key="i"
-            style="width: 300px"
-          >
-            <div class="textPhoto">{{ v }}</div>
+          <div class="choicePhoto" style="width: 300px" v-if="form.img !== ''">
+            <div class="textPhoto">{{ form.img }}</div>
             <div>
               <el-button
                 type="danger"
                 icon="el-icon-close"
                 circle
                 size="mini"
-                @click="deleteChoice(i)"
+                @click="deleteChoice"
               ></el-button>
             </div>
           </div>
@@ -236,13 +231,19 @@
     </el-dialog>
     <div class="seeImg" @click="cancelSee" v-if="seeImgShow">
       <div class="pdfshow" v-if="seeImgType === 'pdf'">
-        <pdf
+        <!-- <pdf
           :src="pdfSrc"
           ref="pdf"
           v-for="item in numPages"
           :key="item"
           :page="item"
-        ></pdf>
+        ></pdf> -->
+        <CPdf :pdfurl="pdfSrc"></CPdf>
+        <!-- <iframe
+          ref="mainiframe"
+          :src="pdfSrc"
+          style="height: 100%; width: 100%"
+        ></iframe> -->
       </div>
       <img :src="pdfSrc" alt="" v-if="seeImgType === 'img'" />
     </div>
@@ -250,13 +251,13 @@
 </template>
 
 <script>
-import pdf from "vue-pdf";
-// import videoPlayer from "vue-video-player";
-// import "video.js/dist/video-js.css";
+import CPdf from "../pdf/CPdf.vue";
+// import pdf from "vue-pdf";
 export default {
   name: "manual",
   components: {
-    pdf,
+    CPdf,
+    // pdf,
     // videoPlayer,
   },
   props: {
@@ -272,6 +273,7 @@ export default {
       seeImgType: "",
       seeImgShow: false,
       queryForm: {
+        name: "",
         type: 0,
       },
       tableHeight: 0,
@@ -297,7 +299,7 @@ export default {
       dialogFormVisible: false,
       form: {
         type: 1,
-        img: [],
+        img: "",
       },
       rules: {
         name: [
@@ -362,12 +364,40 @@ export default {
   },
   created() {},
   mounted() {
-    this.tableHeight = this.$refs.manual.offsetHeight - 100;
+    this.tableHeight = this.$refs.manual.offsetHeight - 80;
     this.querymujuList();
-    this.queryTreeData();
+    this.equipmentNameOptions = JSON.parse(sessionStorage.getItem("treeData"));
     this.shouceList();
+    this.maintenance(this.equipmentNameOptions);
+    console.log("this.equipmentNameOptions", this.equipmentNameOptions);
   },
   methods: {
+    // 根据设备查保养项
+    async maintenance(v) {
+      for (let i = 0; i < v.length; i++) {
+        if (v[i].menuType === 1 && v[i].children) {
+          this.maintenance(v[i].children);
+        }
+        if (v[i].menuType === 2) {
+          let res = null;
+          // eslint-disable-next-line no-undef
+          res = await frmKuchun.queryEquipmentConditionTwo(v[i].menuID);
+          let arr = [];
+          for (let y = 0; y < res.data[1].length; y++) {
+            arr.push({
+              menuID: res.data[1][y].proID,
+              menuName: res.data[1][y].proName,
+            });
+          }
+          if (v[i].children) {
+            v[i].children = arr;
+          } else {
+            v[i].children = [];
+            v[i].children = arr;
+          }
+        }
+      }
+    },
     //查询模具
     async querymujuList() {
       this.loading = this.$loading({
@@ -439,62 +469,6 @@ export default {
       this.currentPageTwo = val;
       this.querymujuList();
     },
-    // 查询设备
-    async queryTreeData() {
-      let res = null;
-      // eslint-disable-next-line no-undef
-      res = await frmKuchun.queryTreeData();
-
-      if (res.code === "1") {
-        // 所有数据
-        let arr = res.data;
-        console.log("arr: ", arr);
-        // 筛选出来的一级菜单
-        let arr1 = [];
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].parentID === 0) {
-            arr1.push({
-              ...arr[i],
-              id: arr[i].menuID + "",
-              pid: 0,
-            });
-            arr.splice(i, 1);
-            i--;
-          }
-        }
-        for (let i = 0; i < arr1.length; i++) {
-          let array = this.children(arr, arr1[i].menuID);
-          if (array.length > 0) {
-            arr1[i].children = array;
-          }
-        }
-        this.equipmentNameOptions = arr1;
-        console.log("this.查询设备: ", this.equipmentNameOptions);
-      }
-    },
-    // 子级菜单分类
-    children(arr, menuID) {
-      if (arr.length === 0) {
-        return [];
-      }
-      let array = [];
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].parentID === menuID) {
-          array.push({
-            ...arr[i],
-            id: arr[i].menuID + "",
-            pid: arr[i].menuID + "-" + (i + 1),
-          });
-        }
-      }
-      for (let i = 0; i < array.length; i++) {
-        let array2 = this.children(arr, array[i].menuID);
-        if (array2.length > 0) {
-          array[i].children = array2;
-        }
-      }
-      return array;
-    },
     //手册列表查询
     async shouceList() {
       let res = null;
@@ -560,17 +534,14 @@ export default {
       let res = await frmKuchun.uploadImgTwo(2);
       console.log("res: ", res);
       if (res !== "") {
-        if (this.form.img.indexOf(res) === -1) {
-          this.form.img.push(res);
-          this.$forceUpdate();
-        }
+        this.form.img = res;
       }
       // this.form.img.push(res);
       // this.$forceUpdate();
     },
     //删除已选
-    deleteChoice(i) {
-      this.form.img.splice(i, 1);
+    deleteChoice() {
+      this.form.img = "";
       this.$forceUpdate();
     },
     //新增修改确认按钮
@@ -609,7 +580,10 @@ export default {
     //新增修改手册弹窗框关闭
     dialogClose() {
       this.$refs.ruleForm.resetFields();
-      this.form = {};
+      this.form = {
+        type: 1,
+        img: "",
+      };
     },
     //查看附件
     enclosure(v) {
@@ -621,24 +595,12 @@ export default {
         // window.open(v.filePath, "_blank");
         this.pdfSrc = v.filePath;
         this.seeImgType = "pdf";
-        this.getNumPages();
         this.seeImgShow = true;
       } else {
         this.pdfSrc = v.filePath;
         this.seeImgType = "img";
         this.seeImgShow = true;
       }
-    },
-    //计算pdf页码总数
-    getNumPages() {
-      let loadingTask = pdf.createLoadingTask(this.pdfSrc);
-      loadingTask.promise
-        .then((pdf) => {
-          this.numPages = pdf.numPages;
-        })
-        .catch((err) => {
-          console.error("pdf 加载失败", err);
-        });
     },
     // 取消附件查看
     cancelSee() {
@@ -662,7 +624,7 @@ export default {
   width: 100%;
   height: calc(100% - 60px);
   .el-form {
-    margin: 10px 0px;
+    margin-top: 5px;
   }
   .manual-table {
     width: 100%;
@@ -671,7 +633,7 @@ export default {
     .add {
       position: absolute;
       right: 0px;
-      top: -55px;
+      top: -45px;
     }
   }
   .pagination {
@@ -720,7 +682,6 @@ export default {
     .pdfshow {
       width: 50%;
       height: 90%;
-      overflow: auto;
     }
     img {
       width: 50%;
