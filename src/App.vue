@@ -2,13 +2,13 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 11:32:24
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-09-27 13:29:04
+ * @LastEditTime: 2022-11-08 10:30:40
  * @FilePath: \yjxt-web\src\App.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
   <div id="app">
-    <router-view />
+    <router-view :key="appkey" />
     <earlyWarning v-if="earlyWarningShow" id="earlyWarning"></earlyWarning>
   </div>
 </template>
@@ -26,7 +26,9 @@ export default {
     // }
   },
   data() {
-    return {};
+    return {
+      appkey: 0,
+    };
   },
   computed: {
     earlyWarningShow() {
@@ -41,6 +43,8 @@ export default {
   },
   created() {
     window.warning = this.warning;
+    window.userData = this.userData;
+    window.jurisdiction = this.jurisdiction;
   },
   mounted() {
     setTimeout(() => {
@@ -53,6 +57,18 @@ export default {
       console.log("v: ", v);
       this.$store.commit("setEarlyData", JSON.parse(v));
       this.$store.commit("setEarlyWarningShow", true);
+    },
+    userData(v) {
+      if (v !== null) {
+        console.log("用户数据", JSON.parse(v));
+        localStorage.setItem("user", JSON.stringify(v));
+        this.appkey++;
+      }
+    },
+    jurisdiction(v) {
+      console.log("v: ", JSON.parse(v));
+      sessionStorage.setItem("jurisdiction", v);
+      this.appkey++;
     },
   },
 };

@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 11:11:14
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 14:00:03
+ * @LastEditTime: 2022-10-27 10:36:06
  * @FilePath: \yjxt-web\src\components\dataList.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -202,44 +202,16 @@ export default {
   },
   data() {
     var validateMenuID = (rule, value, callback) => {
-      console.log(" this.menuForm", this.menuForm);
-      console.log(" this.menuNode", this.menuNode);
-      if (
-        this.menuForm.menuID[this.menuForm.menuID.length - 1] ===
-        this.menuData.menuID
-      ) {
+      if (this.menuForm.menuID === this.menuData.menuID) {
         callback(new Error("父级菜单不可是自身"));
       }
       let bool = true;
-      if (this.menuNode.level === 1) {
-        console.log(1);
-        for (let i = 0; i < this.menuNode.parent.data.length; i++) {
-          console.log(2);
-          if (this.menuNode.parent.data[i].menuID === this.menuData.menuID) {
-            if (this.menuNode.parent.data[i].children !== undefined) {
-              //判断选中的父级菜单是否是当前菜单的子级
-              bool = this.boolmenu(
-                this.menuForm.menuID[this.menuForm.menuID.length - 1],
-                this.menuNode.parent.data[i].children
-              );
-            }
-          }
-          console.log(3);
-        }
-      } else {
-        for (let i = 0; i < this.menuNode.childNodes.length; i++) {
-          if (
-            this.menuNode.childNodes[i].data.menuID ===
-            this.menuForm.menuID[this.menuForm.menuID.length - 1]
-          ) {
-            bool = false;
-          } else if (this.menuNode.childNodes[i].data.children.length > 0) {
-            bool = this.boolmenu(
-              this.menuForm.menuID[this.menuForm.menuID.length - 1],
-              this.menuNode.childNodes[i].data.children
-            );
-          }
-        }
+      if (
+        this.menuData.children !== undefined &&
+        this.menuData.children.length > 0
+      ) {
+        let arr = this.menuData.children;
+        bool = this.boolmenu(this.menuForm.menuID, arr);
       }
       if (!bool) {
         callback(new Error("不可选择自身子级菜单作为父级"));
@@ -277,6 +249,7 @@ export default {
         children: "children",
         label: "menuName",
         checkStrictly: true,
+        emitPath: false,
         value: "menuID",
       },
       rules: {
@@ -441,8 +414,11 @@ export default {
           });
       }
       if (v === "3") {
+        console.log("node.parent.data.menuID: ", node.parent.data.menuID);
         if (node.parent.data.menuID !== undefined) {
           this.menuForm.menuID = node.parent.data.menuID;
+        } else {
+          this.menuForm.menuID = 0;
         }
         this.menuNode = node;
         this.menuData = data;
@@ -481,13 +457,13 @@ export default {
         if (valid) {
           let res = null;
           console.log("this.menuForm", this.menuForm);
+          console.log(this.menuData);
           // eslint-disable-next-line no-undef
           res = await frmKuchun.menuEdit(
             this.menuData.menuID,
-            this.menuForm.menuID.length > 0
-              ? this.menuForm.menuID[this.menuForm.menuID.length - 1]
-              : 0,
-            this.menuForm.name
+            this.menuForm.menuID,
+            this.menuForm.name,
+            this.menuData.menuType
           );
           if (res.code === "1") {
             this.queryTreeData();

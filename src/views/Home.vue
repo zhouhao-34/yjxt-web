@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 11:33:08
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 09:34:11
+ * @LastEditTime: 2022-11-08 09:59:32
  * @FilePath: \yjxt-web\src\views\Home.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -30,17 +30,31 @@
             v-for="(v, i) in menuList"
             :key="i"
             v-if="!v.submenu"
-            :disabled="v.menu === '设置' && user.userID !== 1"
+            :disabled="
+              v.menu_id !== undefined &&
+              (jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(v.menu_id) === -1)
+            "
             >{{ v.menu }}</el-menu-item
           >
-          <el-submenu :index="v.id" v-else>
+          <el-submenu
+            :index="v.id"
+            v-else
+            :disabled="
+              v.menu_id !== undefined &&
+              (jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(v.menu_id) === -1)
+            "
+          >
             <template slot="title">{{ v.menu }}</template>
             <el-menu-item :index="x.id" v-for="(x, y) in v.submenu" :key="y">{{
               x.menu
             }}</el-menu-item>
           </el-submenu>
         </el-menu>
-        <div class="sign">
+        <!-- <div class="sign">
           <el-button v-if="user.userName === ''" type="text" @click="sign"
             >登录</el-button
           >
@@ -56,7 +70,7 @@
               {{ user.userName }}
             </div>
           </el-popover>
-        </div>
+        </div> -->
       </div>
     </div>
     <router-view :key="historyKey" style="height: calc(100% - 60px)" />
@@ -113,8 +127,13 @@ export default {
         {
           menu: "模具管理",
           id: "10",
+          menu_id: "KLJDKCD99EC-b6b5b5-D8EB-47FC-96CE",
         },
-        { menu: "设备保养管理", id: "2" },
+        {
+          menu: "设备保养管理",
+          id: "2",
+          menu_id: "999000D8D99EC-b6b5b5-D8EB-47FC-96CE",
+        },
         {
           menu: "设备预警信息",
           id: "4",
@@ -138,6 +157,7 @@ export default {
         {
           menu: "配件库存管理",
           id: "9",
+          menu_id: "kefvhegsb81-b6b5b5-D8EB-revf-85rd",
           submenu: [
             { menu: "设备配件", id: "9-1" },
             { menu: "入库记录", id: "9-2" },
@@ -161,6 +181,7 @@ export default {
           { required: true, message: "请选择活动区域", trigger: "change" },
         ],
       },
+      jurisdiction: [],
     };
   },
   watch: {
@@ -173,6 +194,7 @@ export default {
   },
   created() {},
   mounted() {
+    this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
     let user = JSON.parse(localStorage.getItem("user"));
     if (user === null) {
       localStorage.setItem("user", JSON.stringify(this.user));
@@ -231,7 +253,7 @@ export default {
       return array;
     },
     // eslint-disable-next-line no-unused-vars
-    handleSelect(key, keyPath) {
+    async handleSelect(key, keyPath) {
       if (key !== null) {
         this.activeIndex = key;
       }
@@ -249,7 +271,9 @@ export default {
         this.$router.push({ path: "/alarmLog/", query: {} });
       }
       if (key === "5") {
-        this.$router.push({ path: "/systemSettings/", query: {} });
+        // this.$router.push({ path: "/systemSettings/", query: {} });
+        // eslint-disable-next-line no-undef
+        await frmKuchun.shezhi();
       }
       if (key === "6") {
         this.$router.push({ path: "/1", query: {} });

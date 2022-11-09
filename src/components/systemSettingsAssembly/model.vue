@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-19 09:54:43
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 10:42:34
+ * @LastEditTime: 2022-11-03 13:16:07
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\model.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -214,19 +214,6 @@
             <el-option label="等于false" value="5"> </el-option>
             <el-option label="指定信号" value="3"> </el-option>
           </el-select>
-          <el-select
-            style="width: 200px"
-            v-model="plcForm.chufa"
-            v-if="
-              plcForm.PLC_addressType === 'string' &&
-              plcForm.PLC_addressType === 'real' &&
-              plcForm.PLC_addressType !== ''
-            "
-          >
-            <el-option label="数据不为空" value="1"> </el-option>
-            <el-option label="与上一次不同" value="2"> </el-option>
-            <el-option label="指定信号" value="3"> </el-option>
-          </el-select>
         </el-form-item>
         <!-- 指定信号读取条件 -->
         <el-form-item
@@ -280,18 +267,6 @@
               <el-option label="string" value="string"> </el-option>
             </el-select>
           </div>
-        </el-form-item>
-        <!-- 指定信号读取类型 -->
-        <el-form-item
-          label="指定信号回写"
-          v-if="plcForm.chufa === '3'"
-          prop="where_returnVal"
-        >
-          <el-input
-            v-model="plcForm.where_returnVal"
-            style="width: 200px"
-          ></el-input>
-          <div style="color: red">不需要回写请留空</div>
         </el-form-item>
         <!-- 读取后的数据处理 -->
         <el-form-item label="读取后的数据处理" prop="chuli">

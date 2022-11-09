@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-10-24 10:30:04
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 16:24:47
+ * @LastEditTime: 2022-10-26 17:37:18
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\manual.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -59,11 +59,17 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" align="center">
+        <el-table-column label="操作" width="150" align="center">
           <!--  eslint-disable-next-line vue/no-unused-vars -->
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="enclosure(scope.row)"
               >查看附件</el-button
+            >
+            <el-button type="text" size="small" @click="datamodify(scope.row)"
+              >修改</el-button
+            >
+            <el-button type="text" size="small" @click="dataDelete(scope.row)"
+              >删除</el-button
             >
           </template>
         </el-table-column>
@@ -294,6 +300,7 @@ export default {
         label: "menuName",
         children: "children",
         multiple: true,
+        emitPath: false,
       },
       title: "新增手册",
       dialogFormVisible: false,
@@ -558,19 +565,34 @@ export default {
             this.loading.close();
           }, 30000);
           let user = JSON.parse(localStorage.getItem("user"));
-          // eslint-disable-next-line no-undef
-          let res = await frmKuchun.weibaoShouCe(
-            this.form.type,
-            this.form.tableID,
-            this.form.img,
-            user.userID,
-            this.form.name
-          );
+          console.log("this.form", this.form);
+          let res = null;
+          if (this.title !== "修改手册") {
+            // eslint-disable-next-line no-undef
+            res = await frmKuchun.weibaoShouCe(
+              this.form.type,
+              this.form.tableID,
+              this.form.img,
+              user.userID,
+              this.form.name
+            );
+          } else {
+            // eslint-disable-next-line no-undef
+            res = await frmKuchun.weibaoShouCeEdit(
+              this.form.type,
+              this.form.tableID,
+              this.form.img,
+              user.userID,
+              this.form.name,
+              this.form.scID
+            );
+          }
+          console.log("新增修改确认按钮: ", res);
           if (res.data === "成功") {
             this.dialogFormVisible = false;
           }
           this.shouceList();
-          console.log("res: ", res);
+          // console.log("res: ", res);
         } else {
           console.log("error submit!!");
           return false;
@@ -605,6 +627,53 @@ export default {
     // 取消附件查看
     cancelSee() {
       this.seeImgShow = false;
+    },
+    // 修改手册按钮
+    datamodify(v) {
+      console.log("v: ", v);
+      let tableID = [];
+      for (let i = 0; i < v.shebeiName.length; i++) {
+        tableID.push(v.shebeiName[i].shebeiID);
+      }
+      this.title = "修改手册";
+      this.dialogFormVisible = true;
+      this.form = {
+        name: v.shouceName,
+        type: v.tableType,
+        img: v.filePath,
+        tableID,
+        scID: v.scID,
+      };
+    },
+
+    // 删除手册
+    dataDelete(v) {
+      this.$confirm("是否删除当前手册", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          let res = null;
+          // eslint-disable-next-line no-undef
+          res = await frmKuchun.weibaoShouCeDel(v.scID);
+          console.log("res: ", res);
+          if (res.data === "成功") {
+            this.$message({
+              type: "success",
+              message: "删除成功!",
+            });
+            this.shouceList();
+          } else {
+            this.$message.error(res.data);
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
     handleSizeChange(val) {
       this.pageSize = val;

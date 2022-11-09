@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-31 13:05:57
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 15:56:37
+ * @LastEditTime: 2022-11-08 08:10:13
  * @FilePath: \yjxt-web\src\components\moidManagement.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -37,7 +37,15 @@
       </el-form>
     </div>
     <div class="button">
-      <el-button @click="addClick" size="mini" type="primary"
+      <el-button
+        :disabled="
+          jurisdiction === undefined ||
+          jurisdiction === null ||
+          jurisdiction.indexOf('YUP09223-483D-4b97-a612-52b981f1efo7') === -1
+        "
+        @click="addClick"
+        size="mini"
+        type="primary"
         >添加模具</el-button
       >
     </div>
@@ -66,20 +74,42 @@
         <el-table-column label="操作" align="center" width="200">
           <!-- eslint-disable-next-line vue/no-unused-vars -->
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="weihu(scope.row)"
+            <el-button
+              :disabled="
+                jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'UIOKL098E-c309fc3-4be1-afee-c37d263qwe85'
+                ) === -1
+              "
+              type="text"
+              size="mini"
+              @click="weihu(scope.row)"
               >维保</el-button
             >
             <el-button
               type="text"
               size="mini"
-              :disabled="scope.row.ckNub * 1 <= 0"
+              :disabled="
+                (scope.row.ckNub * 1 <= 0 && jurisdiction === undefined) ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'AERTD9DF-c309fc3-4be1-afee-c37d263ftreb'
+                ) === -1
+              "
               @click="modify(scope.row)"
               >修改</el-button
             >
             <el-button
               type="text"
               size="mini"
-              :disabled="scope.row.ckNub * 1 > 0"
+              :disabled="
+                (scope.row.ckNub * 1 > 0 && jurisdiction === undefined) ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'VNM980f95-da8a-4c09-b5b5-0f4ff3f4gy15'
+                ) === -1
+              "
               @click="deleteData(scope.row.mjID)"
               >删除</el-button
             >
@@ -425,6 +455,7 @@ export default {
           },
         ],
       },
+      jurisdiction: [],
     };
   },
   watch: {
@@ -437,6 +468,7 @@ export default {
   },
   created() {},
   mounted() {
+    this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
     console.log(this.user);
     this.tableHeight = this.$refs.moidManagement.offsetHeight - 120;
     this.queryList();

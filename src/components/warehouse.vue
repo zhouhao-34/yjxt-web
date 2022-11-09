@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-29 16:06:06
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 11:37:07
+ * @LastEditTime: 2022-11-08 08:14:47
  * @FilePath: \yjxt-web\src\components\warehouse.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -53,7 +53,16 @@
       </el-form>
     </div>
     <div class="button">
-      <el-button size="mini" @click="addClick">新品入库</el-button>
+      <el-button
+        size="mini"
+        @click="addClick"
+        :disabled="
+          jurisdiction === undefined ||
+          jurisdiction === null ||
+          jurisdiction.indexOf('YUP09223-483D-4b97-a612-52b9878ghtf') === -1
+        "
+        >新品入库</el-button
+      >
     </div>
     <div>
       <el-table
@@ -96,23 +105,57 @@
             <!-- <el-button type="text" size="mini" @click="details(scope.row)"
               >适用设备详情</el-button
             > -->
-            <el-button type="text" size="mini" @click="enterClick(scope.row)"
+            <el-button
+              type="text"
+              :disabled="
+                jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'AERTD9DF-c309fc3-4be1-afee-c37d26pouv58'
+                ) === -1
+              "
+              size="mini"
+              @click="enterClick(scope.row)"
               >增加库存</el-button
             >
             <el-button
               type="text"
               size="mini"
-              :disabled="scope.row.ckNub * 1 <= 0"
+              :disabled="
+                scope.row.ckNub * 1 <= 0 ||
+                jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'VNM980f95-da8a-4c09-b5b5-0f4fftyeb854'
+                ) === -1
+              "
               @click="cangkuOut(scope.row)"
               >出库</el-button
             >
-            <el-button type="text" size="mini" @click="updateData(scope.row)"
+            <el-button
+              type="text"
+              size="mini"
+              @click="updateData(scope.row)"
+              :disabled="
+                jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'AERTD9DF-c309fc3-4be1-afee-c37d26396358'
+                ) === -1
+              "
               >修改</el-button
             >
             <el-button
               type="text"
               size="mini"
-              :disabled="scope.row.ckNub * 1 > 0"
+              :disabled="
+                scope.row.ckNub * 1 > 0 &&
+                (jurisdiction === undefined ||
+                  jurisdiction === null ||
+                  jurisdiction.indexOf(
+                    'VNM980f95-da8a-4c09-b5b5-0f4ff3wdg852'
+                  ) === -1)
+              "
               @click="deleteData(scope.row.ckID)"
               >删除</el-button
             >
@@ -412,6 +455,7 @@ export default {
       addApplyVisible: false,
       transferValue: [],
       transferData: [],
+      jurisdiction: [],
     };
   },
   watch: {
@@ -424,6 +468,8 @@ export default {
   },
   created() {},
   mounted() {
+    this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
+    console.log("this.jurisdiction: ", this.jurisdiction);
     this.tableHeight = this.$refs.warehouse.offsetHeight - 120;
     this.queryList();
     this.equipmentNameOptions = JSON.parse(sessionStorage.getItem("treeData"));

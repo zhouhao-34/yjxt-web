@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 13:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 15:01:00
+ * @LastEditTime: 2022-11-07 17:54:42
  * @FilePath: \yjxt-web\src\components\equipmentAssembly\atlas.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -105,16 +105,52 @@
                 <i class="el-icon-setting" style="font-size: 24px"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-edit" command="1"
+                <el-dropdown-item
+                  :disabled="
+                    jurisdiction === undefined ||
+                    jurisdiction === null ||
+                    jurisdiction.indexOf(
+                      'YUP09223-483D-4b97-a612-52b981f14620'
+                    ) === -1
+                  "
+                  icon="el-icon-edit"
+                  command="1"
                   >修改</el-dropdown-item
                 >
-                <el-dropdown-item icon="el-icon-setting" command="2"
+                <el-dropdown-item
+                  :disabled="
+                    jurisdiction === undefined ||
+                    jurisdiction === null ||
+                    jurisdiction.indexOf(
+                      'UIOKL098E-c309fc3-4be1-afee-c37d263fef5a'
+                    ) === -1
+                  "
+                  icon="el-icon-setting"
+                  command="2"
                   >维保</el-dropdown-item
                 >
-                <el-dropdown-item icon="el-icon-refresh" command="3"
+                <el-dropdown-item
+                  :disabled="
+                    jurisdiction === undefined ||
+                    jurisdiction === null ||
+                    jurisdiction.indexOf(
+                      'UIOKL098E-c309fc3-4be1-afee-c37d263fef5a'
+                    ) === -1
+                  "
+                  icon="el-icon-refresh"
+                  command="3"
                   >更换</el-dropdown-item
                 >
-                <el-dropdown-item icon="el-icon-delete" command="4"
+                <el-dropdown-item
+                  :disabled="
+                    jurisdiction === undefined ||
+                    jurisdiction === null ||
+                    jurisdiction.indexOf(
+                      'AERTD9DF-c309fc3-4be1-afee-c37d263fef5a'
+                    ) === -1
+                  "
+                  icon="el-icon-delete"
+                  command="4"
                   >删除</el-dropdown-item
                 >
               </el-dropdown-menu>
@@ -264,6 +300,7 @@ export default {
       user: JSON.parse(localStorage.getItem("user")),
 
       handleForm: { notice: 0 },
+      jurisdiction: [],
     };
   },
   computed: {
@@ -305,6 +342,8 @@ export default {
   created() {},
   beforeMount() {},
   mounted() {
+    this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
+    console.log("this.jurisdiction: ", this.jurisdiction);
     console.log("containerWidth", this.containerWidth);
     this.timer = setInterval(() => {
       if (this.nodeData.length > 0) {

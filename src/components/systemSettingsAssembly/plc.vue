@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-14 14:00:42
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-10-26 09:17:00
+ * @LastEditTime: 2022-10-31 13:21:16
  * @FilePath: \yjxt-web\src\components\systemSettingsAssembly\plc.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -267,15 +267,6 @@ export default {
               this.dialogForm.PLC_port
             );
           } else {
-            console.log(
-              this.dialogForm.className,
-              this.dialogForm.PLC_name,
-              this.dialogForm.PLC_brand,
-              this.dialogForm.PLC_model,
-              this.dialogForm.PLC_ip,
-              this.dialogForm.PLC_port,
-              this.dialogForm.plcID
-            );
             // eslint-disable-next-line no-undef
             res = await frmKuchun.plcEdit(
               this.dialogForm.className,

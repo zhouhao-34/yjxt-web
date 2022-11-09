@@ -37,6 +37,11 @@
         type="primary"
         size="mini"
         @click="addEquipment"
+        :disabled="
+          jurisdiction !== undefined &&
+          jurisdiction !== null &&
+          jurisdiction.indexOf('VNM980f95-da8a-4c09-b5b5-0f4ff3f404f1') === -1
+        "
         v-if="
           nodeData.length > 0 && nodeData[nodeData.length - 1].menuType === 2
         "
