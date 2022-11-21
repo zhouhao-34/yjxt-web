@@ -428,8 +428,28 @@ export default {
     this.queryList();
     this.equipmentNameOptions = JSON.parse(sessionStorage.getItem("treeData"));
     this.queryUserList();
+    this.queryTreeData();
   },
   methods: {
+    // 查询菜单
+    async queryTreeData() {
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.queryTreeData();
+      if (res.code === "1") {
+        // 所有数据
+        let arr = res.data;
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].menuType === 2) {
+            this.transferData.push({
+              key: arr[i].menuID,
+              label: arr[i].menuName,
+            });
+          }
+        }
+        console.log("arr: ", arr);
+      }
+    },
     // 查询列表
     async queryUserList() {
       this.loading = this.$loading({
@@ -729,7 +749,7 @@ export default {
 };
 </script>
 
-<style  lang="scss">
+<style lang="scss">
 .warehouse {
   height: calc(100% - 60px);
   width: 100%;
