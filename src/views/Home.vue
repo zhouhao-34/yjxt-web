@@ -1,4 +1,3 @@
-
 <!--
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 11:33:08
@@ -30,7 +29,7 @@
             v-for="(v, i) in menuList"
             :key="i"
             v-if="!v.submenu"
-            :disabled="v.menu === '设置' && user.userID !== 1"
+            :disabled="v.menu === '设置' && user.userType !== 1"
             >{{ v.menu }}</el-menu-item
           >
           <el-submenu :index="v.id" v-else>
@@ -339,7 +338,7 @@ export default {
 };
 </script>
 
-<style  lang="scss">
+<style lang="scss">
 .Home {
   height: 100%;
   width: 100%;
