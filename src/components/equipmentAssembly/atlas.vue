@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-07 13:57:55
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-11-07 17:54:42
+ * @LastEditTime: 2022-11-11 09:47:19
  * @FilePath: \yjxt-web\src\components\equipmentAssembly\atlas.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -339,11 +339,12 @@ export default {
       },
     },
   },
-  created() {},
-  beforeMount() {},
-  mounted() {
+  created() {
     this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
     console.log("this.jurisdiction: ", this.jurisdiction);
+  },
+  beforeMount() {},
+  mounted() {
     console.log("containerWidth", this.containerWidth);
     this.timer = setInterval(() => {
       if (this.nodeData.length > 0) {

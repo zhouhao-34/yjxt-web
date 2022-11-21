@@ -3,7 +3,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-07-06 11:33:08
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-11-08 09:59:32
+ * @LastEditTime: 2022-11-11 10:52:02
  * @FilePath: \yjxt-web\src\views\Home.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -55,7 +55,7 @@
           </el-submenu>
         </el-menu>
         <!-- <div class="sign">
-          <el-button v-if="user.userName === ''" type="text" @click="sign"
+          <el-button v-if="user.User_Name === ''" type="text" @click="sign"
             >登录</el-button
           >
           <el-popover v-else placement="bottom" trigger="click">
@@ -65,9 +65,9 @@
             <div
               slot="reference"
               :style="{ color: '#409EFF', cursor: 'pointer' }"
-              class="userName"
+              class="User_Name"
             >
-              {{ user.userName }}
+              {{ user.User_Name }}
             </div>
           </el-popover>
         </div> -->
@@ -167,8 +167,8 @@ export default {
         { menu: "设置", id: "5" },
       ],
       user: {
-        userID: "",
-        userName: "",
+        UserID: "",
+        User_Name: "",
       },
       dialogFormVisible: false,
       form: {
@@ -192,15 +192,25 @@ export default {
     //}
     //}
   },
-  created() {},
-  mounted() {
+  created() {
     this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
     let user = JSON.parse(localStorage.getItem("user"));
     if (user === null) {
       localStorage.setItem("user", JSON.stringify(this.user));
     } else {
-      this.user = user;
+      this.user = JSON.parse(user);
+      console.log("this.user: ", this.user);
+      console.log('this.user.UserID !== "": ', this.user.UserID !== "");
+      if (this.user.User_Name !== "") {
+        this.menuList[this.menuList.length - 1].menu = this.user.User_Name;
+        this.menuList[this.menuList.length - 1].id = "5-1";
+      } else {
+        this.menuList[this.menuList.length - 1].menu = "设置";
+        this.menuList[this.menuList.length - 1].id = "5";
+      }
     }
+  },
+  mounted() {
     console.log("  this.user: ", this.user);
     setTimeout(() => {
       this.queryTreeData();
@@ -271,9 +281,12 @@ export default {
         this.$router.push({ path: "/alarmLog/", query: {} });
       }
       if (key === "5") {
-        // this.$router.push({ path: "/systemSettings/", query: {} });
         // eslint-disable-next-line no-undef
         await frmKuchun.shezhi();
+      }
+      if (key === "5-1") {
+        // eslint-disable-next-line no-undef
+        await frmKuchun.shouye(JSON.stringify(this.user));
       }
       if (key === "6") {
         this.$router.push({ path: "/1", query: {} });
@@ -354,7 +367,7 @@ export default {
         this.activeIndex = "8";
         this.handleSelect("8");
       }
-      let user = { userName: "" };
+      let user = { User_Name: "" };
       this.user = user;
       localStorage.setItem("user", JSON.stringify(user));
       console.log(this.activeIndex);

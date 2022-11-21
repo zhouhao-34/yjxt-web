@@ -2,7 +2,7 @@
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-29 16:06:06
  * @LastEditors: DESKTOP-CQREP7P\easy zhou03041516@163.com
- * @LastEditTime: 2022-11-08 08:14:47
+ * @LastEditTime: 2022-11-17 10:59:20
  * @FilePath: \yjxt-web\src\components\warehouse.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -59,7 +59,7 @@
         :disabled="
           jurisdiction === undefined ||
           jurisdiction === null ||
-          jurisdiction.indexOf('YUP09223-483D-4b97-a612-52b9878ghtf') === -1
+          jurisdiction.indexOf('ojrnh843-483D-4b97-a612-52b9878ghtf') === -1
         "
         >新品入库</el-button
       >
@@ -110,9 +110,8 @@
               :disabled="
                 jurisdiction === undefined ||
                 jurisdiction === null ||
-                jurisdiction.indexOf(
-                  'AERTD9DF-c309fc3-4be1-afee-c37d26pouv58'
-                ) === -1
+                jurisdiction.indexOf('ojrnh843-483D-4b97-a612-52b9878ghtf') ===
+                  -1
               "
               size="mini"
               @click="enterClick(scope.row)"
@@ -126,7 +125,7 @@
                 jurisdiction === undefined ||
                 jurisdiction === null ||
                 jurisdiction.indexOf(
-                  'VNM980f95-da8a-4c09-b5b5-0f4fftyeb854'
+                  'VNM980f95-pke4-prkb-b5b5-0f4fftyeb854'
                 ) === -1
               "
               @click="cangkuOut(scope.row)"
@@ -140,7 +139,7 @@
                 jurisdiction === undefined ||
                 jurisdiction === null ||
                 jurisdiction.indexOf(
-                  'AERTD9DF-c309fc3-4be1-afee-c37d26396358'
+                  'AERTD9DF-iehb45m-4be1-afee-c37d26396358'
                 ) === -1
               "
               >修改</el-button
@@ -149,12 +148,12 @@
               type="text"
               size="mini"
               :disabled="
-                scope.row.ckNub * 1 > 0 &&
-                (jurisdiction === undefined ||
-                  jurisdiction === null ||
-                  jurisdiction.indexOf(
-                    'VNM980f95-da8a-4c09-b5b5-0f4ff3wdg852'
-                  ) === -1)
+                scope.row.ckNub * 1 > 0 ||
+                jurisdiction === undefined ||
+                jurisdiction === null ||
+                jurisdiction.indexOf(
+                  'VNM980f95-uej8-pkf4-b5b5-0f4ff3wdg852'
+                ) === -1
               "
               @click="deleteData(scope.row.ckID)"
               >删除</el-button
@@ -265,6 +264,27 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          v-if="title !== '增加库存' && title !== '出库' && title !== '修改'"
+          label="柜号"
+          label-width="120px"
+          prop="gID"
+        >
+          <el-select
+            v-model="form.gID"
+            placeholder="请选择"
+            style="width: 300px"
+          >
+            <el-option label="不在储物柜中" :value="0"> </el-option>
+            <el-option
+              v-for="item in guiList"
+              :key="item.gID"
+              :label="item.guiNub"
+              :value="item.gID"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
           v-if="title !== '出库' && title !== '增加库存'"
           label="备注"
           label-width="120px"
@@ -290,7 +310,7 @@
           v-if="title !== '增加库存' && title !== '出库'"
           label="使用数量"
           label-width="120px"
-          prop="number"
+          prop="numberData"
         >
           <el-table
             border
@@ -310,10 +330,10 @@
             </el-table-column>
             <el-table-column label="使用数量" align="center">
               <template slot-scope="scope">
-                <el-input
+                <el-input-number
                   v-model="scope.row.number"
-                  placeholder="请输入内容"
-                ></el-input>
+                  style="width: 100%"
+                ></el-input-number>
               </template>
             </el-table-column>
           </el-table>
@@ -387,6 +407,12 @@ export default {
       }
       callback();
     };
+    var validatorNumberData = (rule, value, callback) => {
+      if (!this.numberData.length > 0) {
+        callback(new Error("请选择适用设备"));
+      }
+      callback();
+    };
     return {
       formInline: {
         menuID: [],
@@ -402,6 +428,8 @@ export default {
         { label: "品牌", prop: "bandName" },
         { label: "型号", prop: "modelName" },
         { label: "库存数量", prop: "ckNub" },
+        { label: "待入库数量", prop: "daiNub" },
+        { label: "柜号", prop: "guiNub" },
       ],
       currentPage: 1,
       pageSize: 10,
@@ -431,6 +459,8 @@ export default {
         mark: [{ required: true, message: "请输入出库原因", trigger: "blur" }],
         syID: [{ required: true, message: "请选择设备id", trigger: "blur" }],
         userID: [{ required: true, message: "请选择操作人", trigger: "blur" }],
+        gID: [{ required: true, message: "请选择柜号", trigger: "blur" }],
+        numberData: [{ validator: validatorNumberData, trigger: "blur" }],
       },
       disabled: false,
       maxNum: 0,
@@ -456,6 +486,8 @@ export default {
       transferValue: [],
       transferData: [],
       jurisdiction: [],
+      guiList: [],
+      userList: {},
     };
   },
   watch: {
@@ -466,16 +498,40 @@ export default {
     //}
     //}
   },
-  created() {},
-  mounted() {
+  created() {
     this.jurisdiction = JSON.parse(sessionStorage.getItem("jurisdiction"));
-    console.log("this.jurisdiction: ", this.jurisdiction);
+    this.userList = JSON.parse(JSON.parse(localStorage.getItem("user")));
+    console.log("this.userList: ", this.userList);
+  },
+  mounted() {
     this.tableHeight = this.$refs.warehouse.offsetHeight - 120;
     this.queryList();
     this.equipmentNameOptions = JSON.parse(sessionStorage.getItem("treeData"));
     this.queryUserList();
+    this.queryTreeData();
+    this.queryGuiList();
   },
   methods: {
+    // 查询柜号
+    async queryGuiList() {
+      this.loading = this.$loading({
+        lock: true,
+        text: "正在查询",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      setTimeout(() => {
+        this.loading.close();
+      }, 30000);
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.guiList();
+      console.log("查询柜号: ", res);
+      if (res.code === "1") {
+        this.guiList = res.data;
+      }
+      this.loading.close();
+    },
     // 查询列表
     async queryUserList() {
       this.loading = this.$loading({
@@ -498,6 +554,25 @@ export default {
         }
       }
       this.loading.close();
+    },
+    // 查询菜单
+    async queryTreeData() {
+      let res = null;
+      // eslint-disable-next-line no-undef
+      res = await frmKuchun.queryTreeData();
+      if (res.code === "1") {
+        // 所有数据
+        let arr = res.data;
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].menuType === 2) {
+            this.transferData.push({
+              key: arr[i].menuID,
+              label: arr[i].menuName,
+            });
+          }
+        }
+        console.log("arr: ", arr);
+      }
     },
     // 查询列表数据
     async queryList() {
@@ -634,17 +709,18 @@ export default {
               user.userName,
               this.form.remarks,
               menuID,
-              number
+              number,
+              this.form.gID * 1,
+              this.userList.UserID * 1
             );
           } else if (this.title === "增加库存") {
             // eslint-disable-next-line no-undef
             res = await frmKuchun.addStock(
-              this.form.productName,
-              this.form.bandName,
-              this.form.modelName,
               this.form.ckNub * 1,
               user.userID,
-              user.userName
+              user.userName,
+              this.form.ckID,
+              this.userList.UserID * 1
             );
           } else if (this.title === "修改") {
             // eslint-disable-next-line no-undef
@@ -670,7 +746,8 @@ export default {
               this.form.remarks,
               user.userID,
               user.userName,
-              this.form.syID
+              this.form.syID,
+              this.userList.UserID * 1
             );
           }
           console.log("res: ", res);
