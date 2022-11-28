@@ -1,4 +1,3 @@
-
 <!--
  * @Author: DESKTOP-CQREP7P\easy zhou03041516@163.com
  * @Date: 2022-08-10 16:57:55
@@ -797,6 +796,9 @@ export default {
       td,
       th {
         padding: 5px 0px;
+        .cell {
+          padding: 0px;
+        }
       }
       .el-table__body-wrapper {
         background: #002c3b;

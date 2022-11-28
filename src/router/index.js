@@ -17,126 +17,126 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
-    children:[
+    children: [
       {
         path: '/',
         name: 'linnei',
         component: () => import(/* webpackChunkName: "linnei" */ '../components/bulletinBoard/linnei.vue')
-       },
+      },
       {
-      path: '/overview',
-      name: 'overview',
-      component: () => import(/* webpackChunkName: "overview" */ '../components/overview.vue')
-     },
-     {
-      path: '/1',
-      name: '1',
-      component: () => import(/* webpackChunkName: "1" */ '../components/bulletinBoard/index.vue')
-     },
-     {
-      path: '/2',
-      name: '2',
-      component: () => import(/* webpackChunkName: "2" */ '../components/bulletinBoard/two.vue')
-     },
-     {
-      path: 'dataList',
-      name: 'dataList',
-      component: () => import(/* webpackChunkName: "dataList" */ '../components/dataList.vue'),
-      children:[
-        {
-          path: '/',
-          name: 'equipment',
-          component: () => import(/* webpackChunkName: "equipment" */ '../components/equipment.vue')
-         },
-      ]
-     },
-     {
-      path: 'troubleshooting',
-      name: 'troubleshooting',
-      component: () => import(/* webpackChunkName: "troubleshooting" */ '../components/troubleshooting.vue'),
-     },
-     {
-      path: 'alarmLog',
-      name: 'alarmLog',
-      component: () => import(/* webpackChunkName: "alarmLog" */ '../components/alarmLog.vue'),
-     },
-     {
-      path: 'systemSettings',
-      name: 'systemSettings',
-      component: () => import(/* webpackChunkName: "systemSettings" */ '../components/systemSettings.vue'),
-      children:[
-        {
-          path: '/',
-          name: 'plc',
-          component: () => import(/* webpackChunkName: "plc" */ '../components/systemSettingsAssembly/plc.vue')
-         },
-         {
-          path: 'user',
-          name: 'user',
-          component: () => import(/* webpackChunkName: "user" */ '../components/systemSettingsAssembly/user.vue')
-         },
-         {
-          path: 'model',
-          name: 'model',
-          component: () => import(/* webpackChunkName: "model" */ '../components/systemSettingsAssembly/model.vue')
-         },
-         {
-          path: 'classes',
-          name: 'classes',
-          component: () => import(/* webpackChunkName: "classes" */ '../components/systemSettingsAssembly/classes.vue')
-         },
-         {
-          path: 'production',
-          name: 'production',
-          component: () => import(/* webpackChunkName: "production" */ '../components/systemSettingsAssembly/production.vue')
-         },
-         {
-          path: 'viewing',
-          name: 'viewing',
-          component: () => import(/* webpackChunkName: "viewing" */ '../components/systemSettingsAssembly/viewing.vue')
-         },
-         {
-          path: 'read',
-          name: 'read',
-          component: () => import(/* webpackChunkName: "read" */ '../components/systemSettingsAssembly/read.vue')
-         },
-         {
-          path: 'manual',
-          name: 'manual',
-          component: () => import(/* webpackChunkName: "manual" */ '../components/systemSettingsAssembly/manual.vue')
-         },
-      ]
-     },
-     // 仓库管理
-     {
-      path: '/warehouse',
-      name: 'warehouse',
-      component: () => import(/* webpackChunkName: "warehouse" */ '../components/warehouse.vue')
-     },
+        path: '/overview',
+        name: 'overview',
+        component: () => import(/* webpackChunkName: "overview" */ '../components/overview.vue')
+      },
+      {
+        path: '/1',
+        name: '1',
+        component: () => import(/* webpackChunkName: "1" */ '../components/bulletinBoard/index.vue')
+      },
+      {
+        path: '/2',
+        name: '2',
+        component: () => import(/* webpackChunkName: "2" */ '../components/bulletinBoard/two.vue')
+      },
+      {
+        path: 'dataList',
+        name: 'dataList',
+        component: () => import(/* webpackChunkName: "dataList" */ '../components/dataList.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'equipment',
+            component: () => import(/* webpackChunkName: "equipment" */ '../components/equipment.vue')
+          },
+        ]
+      },
+      {
+        path: 'troubleshooting',
+        name: 'troubleshooting',
+        component: () => import(/* webpackChunkName: "troubleshooting" */ '../components/troubleshooting.vue'),
+      },
+      {
+        path: 'alarmLog',
+        name: 'alarmLog',
+        component: () => import(/* webpackChunkName: "alarmLog" */ '../components/alarmLog.vue'),
+      },
+      {
+        path: 'systemSettings',
+        name: 'systemSettings',
+        component: () => import(/* webpackChunkName: "systemSettings" */ '../components/systemSettings.vue'),
+        children: [
+          {
+            path: '/',
+            name: 'plc',
+            component: () => import(/* webpackChunkName: "plc" */ '../components/systemSettingsAssembly/plc.vue')
+          },
+          {
+            path: 'user',
+            name: 'user',
+            component: () => import(/* webpackChunkName: "user" */ '../components/systemSettingsAssembly/user.vue')
+          },
+          {
+            path: 'model',
+            name: 'model',
+            component: () => import(/* webpackChunkName: "model" */ '../components/systemSettingsAssembly/model.vue')
+          },
+          {
+            path: 'classes',
+            name: 'classes',
+            component: () => import(/* webpackChunkName: "classes" */ '../components/systemSettingsAssembly/classes.vue')
+          },
+          {
+            path: 'production',
+            name: 'production',
+            component: () => import(/* webpackChunkName: "production" */ '../components/systemSettingsAssembly/production.vue')
+          },
+          {
+            path: 'viewing',
+            name: 'viewing',
+            component: () => import(/* webpackChunkName: "viewing" */ '../components/systemSettingsAssembly/viewing.vue')
+          },
+          {
+            path: 'read',
+            name: 'read',
+            component: () => import(/* webpackChunkName: "read" */ '../components/systemSettingsAssembly/read.vue')
+          },
+          {
+            path: 'manual',
+            name: 'manual',
+            component: () => import(/* webpackChunkName: "manual" */ '../components/systemSettingsAssembly/manual.vue')
+          },
+        ]
+      },
+      // 仓库管理
+      {
+        path: '/warehouse',
+        name: 'warehouse',
+        component: () => import(/* webpackChunkName: "warehouse" */ '../components/warehouse.vue')
+      },
       // 入库列表
       {
         path: '/cangkuIn',
         name: 'cangkuIn',
         component: () => import(/* webpackChunkName: "cangkuIn" */ '../components/cangkuIn.vue')
-       },
-        // 出库列表
-     {
-      path: '/cangkuOut',
-      name: 'cangkuOut',
-      component: () => import(/* webpackChunkName: "cangkuOut" */ '../components/cangkuOut.vue')
-     },
-        // 模具管理
-        {
-          path: '/moidManagement',
-          name: 'moidManagement',
-          component: () => import(/* webpackChunkName: "moidManagement" */ '../components/moidManagement.vue')
-         },
-            // 模具维保记录
-        {
-          path: '/mouldRecord',
-          name: 'mouldRecord',
-          component: () => import(/* webpackChunkName: "mouldRecord" */ '../components/mouldRecord.vue')
-         },
+      },
+      // 出库列表
+      {
+        path: '/cangkuOut',
+        name: 'cangkuOut',
+        component: () => import(/* webpackChunkName: "cangkuOut" */ '../components/cangkuOut.vue')
+      },
+      // 模具管理
+      {
+        path: '/moidManagement',
+        name: 'moidManagement',
+        component: () => import(/* webpackChunkName: "moidManagement" */ '../components/moidManagement.vue')
+      },
+      // 模具维保记录
+      {
+        path: '/mouldRecord',
+        name: 'mouldRecord',
+        component: () => import(/* webpackChunkName: "mouldRecord" */ '../components/mouldRecord.vue')
+      },
     ]
   },
 ]
